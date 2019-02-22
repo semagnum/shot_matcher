@@ -82,16 +82,17 @@ class CMN_OT_add_color_matching_node(bpy.types.Operator):
     
     def execute(self, context):
         context.scene.use_nodes = True
+        node_group_name = "Alpha Over: " + context.edit_image.name
       
         if context.scene.max_color[0] <= context.scene.min_color[0] or context.scene.max_color[1] <= context.scene.min_color[1] or context.scene.max_color[2] <= context.scene.min_color[2]:
             self.report({'ERROR'}, "The white color is less than or equal to the black color")
             return {'FINISHED'}
         
         # create a group
-        image_merge_group = bpy.data.node_groups.get("Image Merge: " + context.edit_image.name)
+        image_merge_group = bpy.data.node_groups.get(node_group_name)
         
         if image_merge_group is None:
-            image_merge_group = bpy.data.node_groups.new(type="CompositorNodeTree", name="Image Merge: " + context.edit_image.name)
+            image_merge_group = bpy.data.node_groups.new(type="CompositorNodeTree", name=node_group_name)
             # create group inputs
             image_merge_group.inputs.new("NodeSocketColor","Background")
             image_merge_group.inputs.new("NodeSocketColor","Foreground")
@@ -119,12 +120,12 @@ class CMN_OT_add_color_matching_node(bpy.types.Operator):
         color_node.slope = context.scene.max_color - context.scene.min_color
         
         tree = bpy.context.scene.node_tree
-        group_node = tree.nodes.get("Image Merge: " + context.edit_image.name)
+        group_node = tree.nodes.get(node_group_name)
         
         if group_node is None:
             group_node = tree.nodes.new("CompositorNodeGroup")
             group_node.node_tree = image_merge_group
-            group_node.name = "Image Merge: " + context.edit_image.name
+            group_node.name = node_group_name
         
         #switch views
         context.area.type = 'NODE_EDITOR'
