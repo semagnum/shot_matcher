@@ -126,6 +126,11 @@ class CMN_OT_add_color_matching_node(bpy.types.Operator):
             group_node = tree.nodes.new("CompositorNodeGroup")
             group_node.node_tree = image_merge_group
             group_node.name = node_group_name
+            #add the background texture as an input, just for quicker debugging
+            image_node = tree.nodes.new("CompositorNodeImage")
+            image_node.image = context.edit_image
+            image_node.location = -300, 0
+            tree.links.new(image_node.outputs[0], group_node.inputs[0])
         
         #switch views
         context.area.type = 'NODE_EDITOR'
