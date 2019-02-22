@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Color Matching Analyzer",
     "author": "Spencer Magnusson",
-    "version": (1, 0, 1),
+    "version": (1, 1, 0),
     "blender": (2, 80, 0),
     "description": "Analyzes colors of an image and applies it to the compositing tree.",
     "warning": "",
