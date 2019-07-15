@@ -13,7 +13,7 @@ class CMA_OT_color_picker(bpy.types.Operator):
         
         context.window.cursor_set("EYEDROPPER")   
     
-        context.area.header_text_set("Ctrl + Mouse: pick white/black colors, LMB/RMB: finish and apply, ESC: cancel")
+        context.area.header_text_set(text="Ctrl + Mouse: pick white/black colors, LMB/RMB: finish and apply, ESC: cancel")
         
         if event.type == 'MOUSEMOVE':
             if event.ctrl:
@@ -43,12 +43,13 @@ class CMA_OT_color_picker(bpy.types.Operator):
         elif event.type in {'RIGHTMOUSE', 'LEFTMOUSE'}:
             context.scene.min_color = (self.min_r, self.min_g, self.min_b)
             context.scene.max_color = (self.max_r, self.max_g, self.max_b)
-            context.area.header_text_set()
+            context.area.header_text_set(text=None)
+            context.area.tag_redraw()
             context.window.cursor_set("DEFAULT")
             return {'FINISHED'}
         elif event.type == 'ESC':
             context.window.cursor_set("DEFAULT")
-            context.area.header_text_set()
+            context.area.header_text_set(text=None)
             return {'FINISHED'}
         elif event.type in {'MIDDLEMOUSE', 'WHEELUPMOUSE', 'WHEELDOWNMOUSE'}:
             return {'PASS_THROUGH'}
