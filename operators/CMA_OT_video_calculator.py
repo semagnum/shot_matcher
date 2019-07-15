@@ -41,8 +41,8 @@ class CMA_OT_video_calculator(bpy.types.Operator):
         for frame in range(frame, context.scene.cma_end_frame, context.scene.cma_frame_step):  
             viewer_space.image_user.frame_offset = frame
             #switch back and forth to force refresh
-            viewer_space.draw_channels = 'COLOR'
-            viewer_space.draw_channels = 'COLOR_ALPHA'
+            viewer_space.display_channels = 'COLOR'
+            viewer_space.display_channels = 'COLOR_ALPHA'
             frame_analyze(context, viewer_space.image, (frame == context.scene.cma_start_frame - 1))
             self.report({'INFO'}, "Analyzing frame {}".format(frame + 1))
 
