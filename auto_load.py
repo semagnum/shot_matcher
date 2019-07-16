@@ -1,3 +1,5 @@
+#This file courtesy of Jacques Lucke.  It simply helps register all the files.
+
 import os
 import bpy
 import sys
