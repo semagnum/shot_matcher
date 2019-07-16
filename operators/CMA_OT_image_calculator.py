@@ -4,6 +4,7 @@ from ..utils import frame_analyze
 class CMA_OT_image_calculator(bpy.types.Operator):
     bl_idname = "color_matching_analyzer.image_calculator"
     bl_label = "Image Color Analyzer"
+    bl_description = "Calculates the maximum/minimum values in an image"
     bl_options = {'REGISTER'}
     
     @classmethod
