@@ -4,6 +4,7 @@ from ..utils import create_cma_node, validMaxMinRGB
 class CMA_OT_add_image_node(bpy.types.Operator):
     bl_idname = "color_matching_analyzer.add_image_node"
     bl_label = "Apply Analysis to Compositor"
+    bl_description = "Creates a group node that applies the max/min values to the selected image and another layer"
     bl_options = {'REGISTER'}
     
     @classmethod
