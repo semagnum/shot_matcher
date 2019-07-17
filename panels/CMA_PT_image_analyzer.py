@@ -7,7 +7,6 @@ from ..operators.CMA_OT_image_calculator import CMA_OT_image_calculator
 import bpy
 
 class CMA_PT_image_analyzer(bpy.types.Panel):
-    bl_idname = "color_matching_analyzer.CMA_PT_image_analyzer"
     bl_space_type = 'IMAGE_EDITOR'
     bl_label = "Color Matching"
     bl_category = "Color Matching"
