@@ -4,7 +4,6 @@ from ..operators.CMA_OT_add_video_node import CMA_OT_add_video_node
 import bpy
 
 class CMA_PT_video_analyzer(bpy.types.Panel):
-    bl_idname = "color_matching_analyzer.CMA_PT_video_analyzer"
     bl_space_type = 'CLIP_EDITOR'
     bl_label = "Color-Matching Analyzer"
     bl_category = "Color-Matching"
