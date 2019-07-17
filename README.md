@@ -7,7 +7,7 @@ Here's a list of the available operators/functions:
 ## The Calculator
 This simply takes the white and black RGB values for the selected image or video.  It takes the HSV value of the color into account, so saturated colors shouldn't throw off the analyzer as much.  However, sometimes you need more precision, which is why I included the color picker.
 
-Since it's unnecessary to analyze every frame of the movie clip, there's frame start, end and step fields.  Use these fields wisely, so you can balance between getting an accurate analysis while not increasing calculation time.
+Since it's unnecessary to analyze every frame of the movie clip, there's frame start, end and step fields.  Use these fields wisely, so you can balance between getting an accurate analysis while not increasing calculation time.  For the movie clip editor, the frame start and end fields must be within the length of the video in order to be enabled.  This is to prevent the frame analyzer to look at empty/missing frames.
 
 ## Color Picker
 You use this just like a Blender color picker: hold Ctrl while you move the mouse to color pick, left click or right click to apply and finish, or "Escape" to cancel.  It will then take the lowest and highest R, G, and B values and update the panel's color values.
