@@ -9,7 +9,7 @@ class CMA_OT_video_calculator(bpy.types.Operator):
     
     @classmethod
     def poll(cls, context):
-        return context.edit_movieclip is not None and context.scene.cma_start_frame >= context.edit_movieclip.frame_start and context.scene.cma_end_frame <= context.edit_movieclip.frame_duration
+        return context.edit_movieclip is not None and context.scene.cma_start_frame >= context.edit_movieclip.frame_start and context.scene.cma_end_frame <= context.edit_movieclip.frame_duration and context.scene.cma_start_frame <= context.scene.cma_end_frame
     
     def execute(self, context):
         
