@@ -6,12 +6,12 @@ semagnum+blendermarket@gmail.com
 '''
 
 bl_info = {
-    "name": "Color Matching Analyzer",
+    "name": "Shot Matcher",
     "author": "Spencer Magnusson",
     "version": (2, 0, 0),
     "blender": (2, 80, 0),
     "description": "Analyzes colors of an image or movie clip and applies it to the compositing tree.",
-    "location": "Image Editor > UI > Color Matching & Movie Clip Editor > Tools > Color Matching",
+    "location": "Image Editor > UI > Shot Matcher & Movie Clip Editor > Tools > Shot Matcher",
     "support": "COMMUNITY",
     "category": "Compositing"
 }
