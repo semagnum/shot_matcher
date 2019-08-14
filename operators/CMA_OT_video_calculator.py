@@ -4,7 +4,7 @@ from ..utils import frame_analyze
 class CMA_OT_video_calculator(bpy.types.Operator):
     bl_idname = "color_matching_analyzer.video_calculator"
     bl_label = "Video Color Analyzer"
-    bl_description = "Calculates the maximum/minimum values in a movie clip"
+    bl_description = "Calculates the maximum/minimum values in a movie clip, following the frame range and step"
     bl_options = {'REGISTER', 'UNDO'}
     
     @classmethod
