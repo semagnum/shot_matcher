@@ -19,7 +19,7 @@ class CMA_PT_image_analyzer(bpy.types.Panel):
         split = layout.split()
 
         col = split.column()
-        col.operator(CMA_OT_image_calculator.bl_idname, text = 'Calculate', icon='SEQ_HISTOGRAM')
+        col.operator(CMA_OT_image_calculator.bl_idname, text = 'Calculate Colors', icon='SEQ_HISTOGRAM')
         col = split.column(align=True)
         col.operator(CMA_OT_color_picker.bl_idname, text = 'Color Pick', icon='EYEDROPPER')
         col.operator(CMA_OT_color_reset.bl_idname, text = 'Reset Colors', icon='IMAGE_ALPHA')
