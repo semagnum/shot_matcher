@@ -14,14 +14,14 @@ def frame_analyze(context, image, forceOverwrite):
     n = len(pixels)
 
     while index < n:
-        if RGBtoV(context.scene.max_color[0], context.scene.max_color[1], context.scene.max_color[2]) < RGBtoV(pixel[i], pixel[i + 1], pixel[i + 2]):
-            max_r = pixel[i]
-            max_g = pixel[i + 1]
-            max_b = pixel[i + 2]
-        if RGBtoV(context.scene.min_color[0], context.scene.min_color[1], context.scene.min_color[2]) > RGBtoV(pixel[i], pixel[i + 1], pixel[i + 2]):
-            min_r = pixel[i]
-            min_g = pixel[i + 1]
-            min_b = pixel[i + 2]
+        if RGBtoV(context.scene.max_color[0], context.scene.max_color[1], context.scene.max_color[2]) < RGBtoV(pixels[i], pixels[i + 1], pixels[i + 2]):
+            max_r = pixels[i]
+            max_g = pixels[i + 1]
+            max_b = pixels[i + 2]
+        if RGBtoV(context.scene.min_color[0], context.scene.min_color[1], context.scene.min_color[2]) > RGBtoV(pixels[i], pixels[i + 1], pixels[i + 2]):
+            min_r = pixels[i]
+            min_g = pixels[i + 1]
+            min_b = pixels[i + 2]
         index += 4
 
     if forceOverwrite is True:
