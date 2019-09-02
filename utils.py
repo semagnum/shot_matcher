@@ -10,7 +10,7 @@ def frame_analyze(context, image, forceOverwrite):
     min_g = 0.0
     min_b = 0.0
 
-    index = 0
+    i = 0
     n = len(pixels)
 
     while index < n:
