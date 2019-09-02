@@ -13,7 +13,7 @@ def frame_analyze(context, image, forceOverwrite):
     i = 0
     n = len(pixels)
 
-    while index < n:
+    while i < n:
         if RGBtoV(context.scene.max_color[0], context.scene.max_color[1], context.scene.max_color[2]) < RGBtoV(pixels[i], pixels[i + 1], pixels[i + 2]):
             max_r = pixels[i]
             max_g = pixels[i + 1]
@@ -22,7 +22,7 @@ def frame_analyze(context, image, forceOverwrite):
             min_r = pixels[i]
             min_g = pixels[i + 1]
             min_b = pixels[i + 2]
-        index += 4
+        i += 4
 
     if forceOverwrite is True:
         context.scene.max_color = (max_r, max_g, max_b)
