@@ -2,18 +2,27 @@ import bpy
 
 def frame_analyze(context, image, forceOverwrite):          
     pixels = image.pixels[:] # create a copy (tuple) for read-only access
-    
-    #slice the pixels into the RGB channels
-    ch_r = pixels[0::4]    
-    ch_g = pixels[1::4]
-    ch_b = pixels[2::4]
-    
-    max_r = max(ch_r)
-    max_g = max(ch_g)
-    max_b = max(ch_b)
-    min_r = min(ch_r)
-    min_g = min(ch_g)
-    min_b = min(ch_b)
+
+    max_r = 10000.0
+    max_g = 10000.0
+    max_b = 10000.0
+    min_r = 0.0
+    min_g = 0.0
+    min_b = 0.0
+
+    index = 0
+    n = len(pixels)
+
+    while index < n:
+        if RGBtoV(context.scene.max_color[0], context.scene.max_color[1], macontext.scene.x_color[2]) < RGBtoV(pixel[i], pixel[i + 1], pixel[i + 2]):
+            max_r = pixel[i]
+            max_g = pixel[i + 1]
+            max_b = pixel[i + 2]
+        if RGBtoV(context.scene.min_color[0], context.scene.min_color[1], context.scene.min_color[2]) > RGBtoV(pixel[i], pixel[i + 1], pixel[i + 2]):
+            min_r = pixel[i]
+            min_g = pixel[i + 1]
+            min_b = pixel[i + 2]
+        index += 4
 
     if forceOverwrite is True:
         context.scene.max_color = (max_r, max_g, max_b)
