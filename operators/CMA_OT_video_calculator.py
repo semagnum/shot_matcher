@@ -9,9 +9,13 @@ class CMA_OT_video_calculator(bpy.types.Operator):
     
     @classmethod
     def poll(cls, context):
-        return context.edit_movieclip is not None and context.scene.cma_start_frame >= context.edit_movieclip.frame_start and context.scene.cma_end_frame <= context.edit_movieclip.frame_duration and context.scene.cma_start_frame <= context.scene.cma_end_frame
+        return context.edit_movieclip is not None
     
     def execute(self, context):
+        
+        if context.scene.cma_start_frame < context.edit_movieclip.frame_start or context.scene.cma_end_frame > context.edit_movieclip.frame_duration or context.scene.cma_start_frame > context.scene.cma_end_frame:
+            self.report({'ERROR'}, "Invalid frame range: it must be within the frame range of the video clip")
+            return {'FINISHED'}
         
         context.window.cursor_set("WAIT")
 
