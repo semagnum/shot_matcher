@@ -16,6 +16,10 @@ class CMA_PT_video_analyzer(bpy.types.Panel):
         layout.operator(CMA_OT_video_calculator.bl_idname, text = 'Calculate Colors', icon='SEQ_HISTOGRAM')
         layout.operator(CMA_OT_add_video_node.bl_idname, text = 'Apply in Compositor', icon='NODETREE')
         
+        layout.prop(context.scene, "sm_use_alpha_threshold")
+        if context.scene.sm_use_alpha_threshold:
+            layout.prop(context.scene, "sm_alpha_threshold")
+        
         layout.prop(context.scene, "max_color", text='White Color')
         layout.prop(context.scene, "min_color", text='Black Color')
 
