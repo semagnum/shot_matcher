@@ -24,8 +24,8 @@ class CMA_PT_image_analyzer(bpy.types.Panel):
         layout.operator(CMA_OT_color_picker.bl_idname, text = 'Color Pick', icon='EYEDROPPER')
         layout.operator(CMA_OT_color_reset.bl_idname, text = 'Reset Colors', icon='IMAGE_ALPHA')
         
-        layout.label(text="Apply to Compositor")
-        layout.operator(CMA_OT_add_image_node.bl_idname, text = 'Update Node Group', icon='NODETREE')
+        layout.label(text="Apply")
+        layout.operator(CMA_OT_add_image_node.bl_idname, text = 'Apply in Compositor', icon='NODETREE')
         
         layout.prop(context.scene, "sm_use_alpha_threshold")
         if context.scene.sm_use_alpha_threshold:
