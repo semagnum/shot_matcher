@@ -16,15 +16,15 @@ class CMA_PT_image_analyzer(bpy.types.Panel):
         
         layout = self.layout
         
-        col.label(text="Automatic Calculation")
+        layout.label(text="Automatic Calculation")
 
         layout.operator(CMA_OT_image_calculator.bl_idname, text = 'Calculate Colors', icon='SEQ_HISTOGRAM')
         
-        col.label(text="Color Picker")
+        layout.label(text="Color Picker")
         layout.operator(CMA_OT_color_picker.bl_idname, text = 'Color Pick', icon='EYEDROPPER')
         layout.operator(CMA_OT_color_reset.bl_idname, text = 'Reset Colors', icon='IMAGE_ALPHA')
         
-        col.label(text="Apply to Compositor")
+        layout.label(text="Apply to Compositor")
         layout.operator(CMA_OT_add_image_node.bl_idname, text = 'Update Node Group', icon='NODETREE')
         
         layout.prop(context.scene, "sm_use_alpha_threshold")
