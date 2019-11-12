@@ -18,7 +18,7 @@ class CMA_PT_video_analyzer(bpy.types.Panel):
         
         layout.prop(context.scene, "sm_use_alpha_threshold")
         if context.scene.sm_use_alpha_threshold:
-            layout.prop(context.scene, "sm_alpha_threshold")
+            layout.prop(context.scene, "sm_alpha_threshold", slider = True)
         
         layout.prop(context.scene, "max_color", text='White Color')
         layout.prop(context.scene, "min_color", text='Black Color')
