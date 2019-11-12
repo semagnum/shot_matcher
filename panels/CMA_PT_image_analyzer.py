@@ -16,15 +16,19 @@ class CMA_PT_image_analyzer(bpy.types.Panel):
         
         layout = self.layout
         
-        split = layout.split()
+        col.label(text="Automatic Calculation")
 
-        col = split.column()
-        col.operator(CMA_OT_image_calculator.bl_idname, text = 'Calculate Colors', icon='SEQ_HISTOGRAM')
-        col = split.column(align=True)
-        col.operator(CMA_OT_color_picker.bl_idname, text = 'Color Pick', icon='EYEDROPPER')
-        col.operator(CMA_OT_color_reset.bl_idname, text = 'Reset Colors', icon='IMAGE_ALPHA')
+        layout.operator(CMA_OT_image_calculator.bl_idname, text = 'Calculate Colors', icon='SEQ_HISTOGRAM')
         
-        layout.operator(CMA_OT_add_image_node.bl_idname, text = 'Apply in Compositor', icon='NODETREE')
+        col.label(text="Color Picker")
+        layout.operator(CMA_OT_color_picker.bl_idname, text = 'Color Pick', icon='EYEDROPPER')
+        layout.operator(CMA_OT_color_reset.bl_idname, text = 'Reset Colors', icon='IMAGE_ALPHA')
         
+        col.label(text="Apply to Compositor")
+        layout.operator(CMA_OT_add_image_node.bl_idname, text = 'Update Node Group', icon='NODETREE')
+        
+        col.label(text="Settings")
         layout.prop(context.scene, "max_color", text='White Color')
         layout.prop(context.scene, "min_color", text='Black Color')
+        layout.prop(context.scene, "sm_use_alpha_threshold")
+        layout.prop(context.scene, "sm_alpha_threshold ")
