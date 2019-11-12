@@ -27,8 +27,9 @@ class CMA_PT_image_analyzer(bpy.types.Panel):
         col.label(text="Apply to Compositor")
         layout.operator(CMA_OT_add_image_node.bl_idname, text = 'Update Node Group', icon='NODETREE')
         
-        col.label(text="Settings")
+        layout.prop(context.scene, "sm_use_alpha_threshold")
+        if context.scene.sm_use_alpha_threshold:
+            layout.prop(context.scene, "sm_alpha_threshold")
+        
         layout.prop(context.scene, "max_color", text='White Color')
         layout.prop(context.scene, "min_color", text='Black Color')
-        layout.prop(context.scene, "sm_use_alpha_threshold")
-        layout.prop(context.scene, "sm_alpha_threshold ")
