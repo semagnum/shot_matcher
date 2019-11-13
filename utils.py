@@ -54,7 +54,7 @@ def validMaxMinRGB(context):
   
     return minV <= maxV
 
-def create_cma_node(context, node_group_name):
+def create_sm_node(context, node_group_name):
     # create a group
     image_merge_group = bpy.data.node_groups.get(node_group_name)
     

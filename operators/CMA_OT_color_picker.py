@@ -1,7 +1,7 @@
 import bpy
 from .. import globalProps
 
-class CMA_OT_color_picker(bpy.types.Operator):
+class SM_OT_color_picker(bpy.types.Operator):
     bl_idname = "color_matching_analyzer.color_picker"
     bl_description = "Enables a color picker that selects only the maximum and minimum values"
     bl_label = "Min Max Color Picker"

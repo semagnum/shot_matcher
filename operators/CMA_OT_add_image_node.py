@@ -1,7 +1,7 @@
 import bpy
-from ..utils import create_cma_node, validMaxMinRGB
+from ..utils import create_sm_node, validMaxMinRGB
 
-class CMA_OT_add_image_node(bpy.types.Operator):
+class SM_OT_add_image_node(bpy.types.Operator):
     bl_idname = "color_matching_analyzer.add_image_node"
     bl_label = "Apply Analysis to Compositor"
     bl_description = "Creates a group node that applies the max/min values to the selected image and another layer"
@@ -19,7 +19,7 @@ class CMA_OT_add_image_node(bpy.types.Operator):
             self.report({'ERROR'}, "The white color is less than or equal to the black color")
             return {'FINISHED'}
         
-        image_merge_group = create_cma_node(context, node_group_name)
+        image_merge_group = create_sm_node(context, node_group_name)
         
         tree = bpy.context.scene.node_tree
         group_node = tree.nodes.get(node_group_name)

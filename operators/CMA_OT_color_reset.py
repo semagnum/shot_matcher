@@ -1,6 +1,6 @@
 import bpy, sys
 
-class CMA_OT_color_reset(bpy.types.Operator):
+class SM_OT_color_reset(bpy.types.Operator):
     bl_idname = "color_matching_analyzer.color_reset"
     bl_label = "Reset Min and Max Colors"
     bl_description = "Resets the maximum and minimum color values for use with the color picker"
