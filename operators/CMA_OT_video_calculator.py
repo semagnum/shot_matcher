@@ -1,7 +1,7 @@
 import bpy
 from ..utils import frame_analyze
 
-class CMA_OT_video_calculator(bpy.types.Operator):
+class SM_OT_video_calculator(bpy.types.Operator):
     bl_idname = "color_matching_analyzer.video_calculator"
     bl_label = "Video Color Analyzer"
     bl_description = "Calculates the maximum/minimum values in a movie clip, following the frame range and step"
@@ -13,7 +13,7 @@ class CMA_OT_video_calculator(bpy.types.Operator):
     
     def execute(self, context):
         
-        if context.scene.cma_start_frame < context.edit_movieclip.frame_start or context.scene.cma_end_frame > context.edit_movieclip.frame_duration or context.scene.cma_start_frame > context.scene.cma_end_frame:
+        if context.scene.sm_start_frame < context.edit_movieclip.frame_start or context.scene.sm_end_frame > context.edit_movieclip.frame_duration or context.scene.sm_start_frame > context.scene.sm_end_frame:
             self.report({'ERROR'}, "Invalid frame range: it must be within the frame range of the video clip")
             return {'FINISHED'}
         
@@ -42,13 +42,13 @@ class CMA_OT_video_calculator(bpy.types.Operator):
         viewer_space.image = bpy.data.images.load(path)
 
         #the frame_offset property starts at 0 index, so first frame is actually 0
-        frame = context.scene.cma_start_frame - 1
-        for frame in range(frame, context.scene.cma_end_frame, context.scene.cma_frame_step):  
+        frame = context.scene.sm_start_frame - 1
+        for frame in range(frame, context.scene.sm_end_frame, context.scene.sm_frame_step):  
             viewer_space.image_user.frame_offset = frame
             #switch back and forth to force refresh
             viewer_space.display_channels = 'COLOR'
             viewer_space.display_channels = 'COLOR_ALPHA'
-            frame_analyze(context, viewer_space.image, (frame == context.scene.cma_start_frame - 1))
+            frame_analyze(context, viewer_space.image, (frame == context.scene.sm_start_frame - 1))
             self.report({'INFO'}, "Analyzing frame {}".format(frame + 1))
 
         viewer_space.image.user_clear()
