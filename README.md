@@ -5,7 +5,7 @@ The purpose of this addon is to speed up the compositing workflow with matching 
 Here's a list of the available operators/functions:
 
 ## The Calculator
-This simply takes the white and black RGB values for the selected image or video.  It takes the HSV value of the color into account, so saturated colors shouldn't throw off the analyzer as much.  However, sometimes you need more precision, which is why I included the color picker.
+This simply takes the white and black RGB values for the selected image or video.  There's also an alpha threshold option when you're working with transparent images.  This helps prevent transparent pixels from throwing off the calculator.  And when you need more precision, the color picker can extract the maximum and minimum colors in an area.
 
 Since it's unnecessary to analyze every frame of the movie clip, there's frame start, end and step fields.  Use these fields wisely, so you can balance between getting an accurate analysis while not increasing calculation time.  For the movie clip editor, the frame start and end fields must be within the length of the video in order to be enabled.  This is to prevent the frame analyzer to look at empty/missing frames.
 

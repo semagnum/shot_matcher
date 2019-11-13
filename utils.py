@@ -4,9 +4,19 @@ def frame_analyze(context, image, forceOverwrite):
     pixels = image.pixels[:] # create a copy (tuple) for read-only access
     
     #slice the pixels into the RGB channels
-    ch_r = pixels[0::4]    
-    ch_g = pixels[1::4]
-    ch_b = pixels[2::4]
+    if context.scene.sm_use_alpha_threshold:
+        ch_r = []
+        ch_g = []
+        ch_b = []
+        for index in range(0, len(pixels), 4):
+            if pixels[index + 3] >= context.scene.sm_alpha_threshold:
+                ch_r.append(pixels[index])
+                ch_g.append(pixels[index + 1])
+                ch_b.append(pixels[index + 2])
+    else:
+        ch_r = pixels[0::4]    
+        ch_g = pixels[1::4]
+        ch_b = pixels[2::4]
     
     max_r = max(ch_r)
     max_g = max(ch_g)

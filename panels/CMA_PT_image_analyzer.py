@@ -16,15 +16,19 @@ class CMA_PT_image_analyzer(bpy.types.Panel):
         
         layout = self.layout
         
-        split = layout.split()
+        layout.label(text="Automatic Calculation")
 
-        col = split.column()
-        col.operator(CMA_OT_image_calculator.bl_idname, text = 'Calculate Colors', icon='SEQ_HISTOGRAM')
-        col = split.column(align=True)
-        col.operator(CMA_OT_color_picker.bl_idname, text = 'Color Pick', icon='EYEDROPPER')
-        col.operator(CMA_OT_color_reset.bl_idname, text = 'Reset Colors', icon='IMAGE_ALPHA')
+        layout.operator(CMA_OT_image_calculator.bl_idname, text = 'Calculate Colors', icon='SEQ_HISTOGRAM')
+        layout.prop(context.scene, "sm_use_alpha_threshold")
+        if context.scene.sm_use_alpha_threshold:
+            layout.prop(context.scene, "sm_alpha_threshold", slider = True)
         
-        layout.operator(CMA_OT_add_image_node.bl_idname, text = 'Apply in Compositor', icon='NODETREE')
-        
+        layout.label(text="Color Picker")
+        layout.operator(CMA_OT_color_picker.bl_idname, text = 'Color Pick', icon='EYEDROPPER')
+        layout.operator(CMA_OT_color_reset.bl_idname, text = 'Reset Colors', icon='IMAGE_ALPHA')
+
         layout.prop(context.scene, "max_color", text='White Color')
         layout.prop(context.scene, "min_color", text='Black Color')
+        
+        layout.label(text="Apply")
+        layout.operator(CMA_OT_add_image_node.bl_idname, text = 'Apply in Compositor', icon='NODETREE')
