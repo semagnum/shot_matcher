@@ -1,29 +1,30 @@
 import bpy
+import numpy as np
 
 def frame_analyze(context, image, forceOverwrite):          
-    pixels = image.pixels[:] # create a copy (tuple) for read-only access
+    pixels = np.array(image.pixels)
     
     #slice the pixels into the RGB channels
     if context.scene.sm_use_alpha_threshold:
-        ch_r = []
-        ch_g = []
-        ch_b = []
+        ch_r = np.empty(0)
+        ch_g = np.empty(0)
+        ch_b = np.empty(0)
         for index in range(0, len(pixels), 4):
             if pixels[index + 3] >= context.scene.sm_alpha_threshold:
-                ch_r.append(pixels[index])
-                ch_g.append(pixels[index + 1])
-                ch_b.append(pixels[index + 2])
+                ch_r = np.append(ch_r, pixels[index])
+                ch_g = np.append(ch_g, pixels[index + 1])
+                ch_b = np.append(ch_b, pixels[index + 2])
     else:
         ch_r = pixels[0::4]    
         ch_g = pixels[1::4]
         ch_b = pixels[2::4]
     
-    max_r = max(ch_r)
-    max_g = max(ch_g)
-    max_b = max(ch_b)
-    min_r = min(ch_r)
-    min_g = min(ch_g)
-    min_b = min(ch_b)
+    max_r = ch_r.max()
+    max_g = ch_g.max()
+    max_b = ch_b.max()
+    min_r = ch_r.min()
+    min_g = ch_g.min()
+    min_b = ch_b.min()
 
     if forceOverwrite is True:
         context.scene.max_color = (max_r, max_g, max_b)
