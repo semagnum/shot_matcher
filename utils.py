@@ -1,18 +1,18 @@
 import bpy
 import numpy as np
 
-def frame_analyze(context, image, forceOverwrite):          
+def frame_analyze(context, image, forceOverwrite, layer):          
     pixels = np.array(image.pixels)
     
     #slice the pixels into the RGB channels
     ch_r = pixels[0::4]    
     ch_g = pixels[1::4]
     ch_b = pixels[2::4]
-    if context.scene.sm_use_alpha_threshold:
+    if layer.sm_use_alpha_threshold:
         ch_a = pixels[3::4]
-        ch_r = ch_r[(ch_a >= context.scene.sm_alpha_threshold)]
-        ch_g = ch_g[(ch_a >= context.scene.sm_alpha_threshold)]
-        ch_b = ch_b[(ch_a >= context.scene.sm_alpha_threshold)]
+        ch_r = ch_r[(ch_a >= layer.sm_alpha_threshold)]
+        ch_g = ch_g[(ch_a >= layer.sm_alpha_threshold)]
+        ch_b = ch_b[(ch_a >= layer.sm_alpha_threshold)]
     
     max_r = ch_r.max()
     max_g = ch_g.max()
@@ -22,21 +22,21 @@ def frame_analyze(context, image, forceOverwrite):
     min_b = ch_b.min()
 
     if forceOverwrite is True:
-        context.scene.max_color = (max_r, max_g, max_b)
-        context.scene.min_color = (min_r, min_g, min_b)
+        layer.max_color = (max_r, max_g, max_b)
+        layer.min_color = (min_r, min_g, min_b)
         return True
 
     #we only want to overwrite if the value supersedes the current one
     maxNewV = RGBtoV(max_r, max_g, max_b)
-    maxCurrentV = RGBtoV(context.scene.max_color[0], context.scene.max_color[1], context.scene.max_color[2])
+    maxCurrentV = RGBtoV(layer.max_color[0], layer.max_color[1], layer.max_color[2])
 
     if maxNewV > maxCurrentV:
-        context.scene.max_color = (max_r, max_g, max_b)
+        layer.max_color = (max_r, max_g, max_b)
 
     minNewV = RGBtoV(min_r, min_g, min_b)
-    minCurrentV = RGBtoV(context.scene.min_color[0], context.scene.min_color[1], context.scene.min_color[2])
+    minCurrentV = RGBtoV(layer.min_color[0], layer.min_color[1], layer.min_color[2])
     if minNewV < minCurrentV:
-        context.scene.min_color = (min_r, min_g, min_b)
+        layer.min_color = (min_r, min_g, min_b)
     
     return True
 
@@ -44,9 +44,9 @@ def RGBtoV(r, g, b):
     RGBList = [r, g, b]
     return max(RGBList)
 
-def validMaxMinRGB(context):
-    minV = RGBtoV(context.scene.min_color[0], context.scene.min_color[1], context.scene.min_color[2])
-    maxV = RGBtoV(context.scene.max_color[0], context.scene.max_color[1], context.scene.max_color[2])
+def validMaxMinRGB(context, layer):
+    minV = RGBtoV(layer.min_color[0], layer.min_color[1], layer.min_color[2])
+    maxV = RGBtoV(layer.max_color[0], layer.max_color[1], layer.max_color[2])
   
     return minV <= maxV
 

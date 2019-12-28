@@ -1,5 +1,5 @@
 import bpy
-from .. import globalProps
+from ..LayerSettings import LayerSettings
 
 class SM_OT_color_picker(bpy.types.Operator):
     bl_idname = "color_matching_analyzer.color_picker"
