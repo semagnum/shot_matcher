@@ -41,23 +41,25 @@ def frame_analyze(context, image, forceOverwrite, layer):
     return True
 
 def RGBtoV(r, g, b):
-    RGBList = [r, g, b]
-    return max(RGBList)
+    return max([r, g, b])
 
-def validMaxMinRGB(context, layer):
-    minV = RGBtoV(layer.min_color[0], layer.min_color[1], layer.min_color[2])
-    maxV = RGBtoV(layer.max_color[0], layer.max_color[1], layer.max_color[2])
-  
-    return minV <= maxV
+def validMaxMinRGB(context):
 
-def create_sm_node(context, node_group_name):
+    def validLayerMaxMin(context, layer):
+        minV = RGBtoV(layer.min_color[0], layer.min_color[1], layer.min_color[2])
+        maxV = RGBtoV(layer.max_color[0], layer.max_color[1], layer.max_color[2])
+        return minV <= maxV
+    
+    return validLayerMaxMin(context, context.scene.sm_background) && validLayerMaxMin(context, context.scene.sm_foreground)
+
+def create_sm_ao_node(context, node_group_name):
     # create a group
     image_merge_group = bpy.data.node_groups.get(node_group_name)
     
     if image_merge_group is None:
         image_merge_group = bpy.data.node_groups.new(type="CompositorNodeTree", name=node_group_name)
         # create group inputs
-        image_merge_group.inputs.new("NodeSocketColor","Background")
+        image_merge_group.inputs.new('NodeSocketColor',"Background")
         image_merge_group.inputs.new("NodeSocketColor","Foreground")
         group_inputs = image_merge_group.nodes.new('NodeGroupInput')
         group_inputs.location = (-250,0)
@@ -79,7 +81,7 @@ def create_sm_node(context, node_group_name):
         image_merge_group.links.new(alpha_over_node.outputs[0], group_outputs.inputs['Image'])
 
     color_node = image_merge_group.nodes.get("Color Balance")
-    color_node.offset = context.scene.min_color
-    color_node.slope = context.scene.max_color - context.scene.min_color
+    color_node.offset = context.scene.sm_background.min_color - context.scene.sm_foreground.min_color
+    color_node.slope = (context.scene.sm_background.max_color - context.scene.sm_background.min_color) / (context.scene.sm_foreground.max_color - context.scene.sm_foreground.min_color)
         
     return image_merge_group

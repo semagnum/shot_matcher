@@ -2,7 +2,7 @@ import bpy
 from ..utils import frame_analyze
 
 class SM_OT_video_calculator(bpy.types.Operator):
-    bl_idname = "color_matching_analyzer.video_calculator"
+    bl_idname = "shot_matcher.video_calculator"
     bl_label = "Video Color Analyzer"
     bl_description = "Calculates the maximum/minimum values in a movie clip, following the frame range and step"
     bl_options = {'REGISTER', 'UNDO'}
@@ -14,7 +14,6 @@ class SM_OT_video_calculator(bpy.types.Operator):
         return layer is not None and layer.layer_name
     
     def execute(self, context):
-        
         movie_clip = bpy.data.movieclips[layer.layer_name]
 
         if layer.start_frame < movie_clip.frame_start or layer.end_frame > movie_clip.frame_duration or layer.start_frame > layer.end_frame:

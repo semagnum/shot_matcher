@@ -1,7 +1,7 @@
 import bpy, sys
 
 class SM_OT_color_reset(bpy.types.Operator):
-    bl_idname = "color_matching_analyzer.color_reset"
+    bl_idname = "shot_matcher.color_reset"
     bl_label = "Reset Min and Max Colors"
     bl_description = "Resets the maximum and minimum color values for use with the color picker"
     bl_options = {'REGISTER', 'UNDO'}
