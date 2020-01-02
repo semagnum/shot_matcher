@@ -1,6 +1,6 @@
 import bpy
 
-from ..LayerSettings import LayerSettings
+from .panel_utils import draw_panel
 
 class SM_PT_image_analyzer(bpy.types.Panel):
     bl_space_type = 'IMAGE_EDITOR'
@@ -9,4 +9,4 @@ class SM_PT_image_analyzer(bpy.types.Panel):
     bl_region_type = 'UI'
     
     def draw(self, context):
-        LayerSettings.draw_panel(self, context)
+        draw_panel(self, context)

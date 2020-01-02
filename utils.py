@@ -1,7 +1,13 @@
 import bpy
 import numpy as np
 
-def frame_analyze(context, image, forceOverwrite, layer):          
+def get_layer_settings(context):
+    if context.scene.layer_context == 'bg':
+        return context.scene.sm_background
+    return context.scene.sm_foreground
+
+def frame_analyze(context, image, forceOverwrite):  
+    layer = get_layer_settings(context)        
     pixels = np.array(image.pixels)
     
     #slice the pixels into the RGB channels
@@ -50,7 +56,7 @@ def validMaxMinRGB(context):
         maxV = RGBtoV(layer.max_color[0], layer.max_color[1], layer.max_color[2])
         return minV <= maxV
     
-    return validLayerMaxMin(context, context.scene.sm_background) && validLayerMaxMin(context, context.scene.sm_foreground)
+    return validLayerMaxMin(context, context.scene.sm_background) and validLayerMaxMin(context, context.scene.sm_foreground)
 
 def create_sm_ao_node(context, node_group_name):
     # create a group

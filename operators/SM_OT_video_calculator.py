@@ -1,5 +1,6 @@
 import bpy
-from ..utils import frame_analyze
+from ..utils import frame_analyze, get_layer_settings
+from ..LayerSettings import LayerSettings
 
 class SM_OT_video_calculator(bpy.types.Operator):
     bl_idname = "shot_matcher.video_calculator"
@@ -7,16 +8,15 @@ class SM_OT_video_calculator(bpy.types.Operator):
     bl_description = "Calculates the maximum/minimum values in a movie clip, following the frame range and step"
     bl_options = {'REGISTER', 'UNDO'}
 
-    layer = None
-    
     @classmethod
     def poll(cls, context):
-        return layer is not None and layer.layer_name
+        return bpy.data.movieclips[get_layer_settings(context).layer_name] is not None
     
     def execute(self, context):
-        movie_clip = bpy.data.movieclips[layer.layer_name]
+        context_layer = get_layer_settings(context)
+        movie_clip = bpy.data.movieclips[context_layer.layer_name]
 
-        if layer.start_frame < movie_clip.frame_start or layer.end_frame > movie_clip.frame_duration or layer.start_frame > layer.end_frame:
+        if context_layer.start_frame < movie_clip.frame_start or context_layer.end_frame > movie_clip.frame_duration or context_layer.start_frame > context_layer.end_frame:
             self.report({'ERROR'}, "Invalid frame range: it must be within the frame range of the video clip")
             return {'FINISHED'}
         
@@ -44,13 +44,13 @@ class SM_OT_video_calculator(bpy.types.Operator):
         viewer_space.image = bpy.data.images.load(movie_clip.filepath)
 
         #the frame_offset property starts at 0 index, so first frame is actually 0
-        frame = layer.start_frame - 1
-        for frame in range(frame, layer.end_frame, layer.frame_step):  
+        frame = context_layer.start_frame - 1
+        for frame in range(frame, context_layer.end_frame, context_layer.frame_step):  
             viewer_space.image_user.frame_offset = frame
             #switch back and forth to force refresh
             viewer_space.display_channels = 'COLOR'
             viewer_space.display_channels = 'COLOR_ALPHA'
-            frame_analyze(context, viewer_space.image, (frame == layer.start_frame - 1))
+            frame_analyze(context, viewer_space.image, (frame == context_layer.start_frame - 1))
             self.report({'INFO'}, "Analyzing frame {}".format(frame + 1))
 
         viewer_space.image.user_clear()

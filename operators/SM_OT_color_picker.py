@@ -1,11 +1,11 @@
 import bpy
+from ..LayerSettings import LayerSettings
+from ..utils import get_layer_settings
 
 class SM_OT_color_picker(bpy.types.Operator):
     bl_idname = "shot_matcher.color_picker"
     bl_description = "Use a color picker to select the white and black values"
     bl_label = "Min Max Color Picker"
-
-    layer = None
     
     @classmethod
     def poll(cls, context):
@@ -43,8 +43,9 @@ class SM_OT_color_picker(bpy.types.Operator):
                 if pixels[2] < self.min_b:
                     self.min_b = pixels[2]        
         elif event.type in {'RIGHTMOUSE', 'LEFTMOUSE'}:
-            layer.min_color = (self.min_r, self.min_g, self.min_b)
-            layer.max_color = (self.max_r, self.max_g, self.max_b)
+            context_layer = get_layer_settings(context)
+            context_layer.min_color = (self.min_r, self.min_g, self.min_b)
+            context_layer.max_color = (self.max_r, self.max_g, self.max_b)
             context.area.header_text_set(text=None)
             context.area.tag_redraw()
             context.window.cursor_set("DEFAULT")
@@ -59,12 +60,13 @@ class SM_OT_color_picker(bpy.types.Operator):
         return {'RUNNING_MODAL'}
     
     def invoke(self, context, event):
-        self.min_r = layer.min_color[0]
-        self.min_g = layer.min_color[1]
-        self.min_b = layer.min_color[2]
-        self.max_r = layer.max_color[0]
-        self.max_g = layer.max_color[1]
-        self.max_b = layer.max_color[2]
+        context_layer = get_layer_settings(context)
+        self.min_r = context_layer.min_color[0]
+        self.min_g = context_layer.min_color[1]
+        self.min_b = context_layer.min_color[2]
+        self.max_r = context_layer.max_color[0]
+        self.max_g = context_layer.max_color[1]
+        self.max_b = context_layer.max_color[2]
         
         if context.area.type == 'IMAGE_EDITOR' and context.edit_image is not None:
             context.window_manager.modal_handler_add(self)

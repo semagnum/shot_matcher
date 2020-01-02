@@ -19,18 +19,24 @@ bl_info = {
 import bpy
 
 from . import auto_load
+from .LayerSettings import LayerSettings
 
 auto_load.init()
 
 def register():
     auto_load.register()
     scene = bpy.types.Scene
-    scene.show_bg_options = bpy.props.BoolProperty(default=True)
-    scene.show_fg_options = bpy.props.BoolProperty(default=True)
+    scene.layer_context = bpy.props.EnumProperty(
+        name="Layer",
+        description='The current layer being analyzed',
+        items=[ ('bg', "Background", ''),
+                ('fg', "Foreground", ''),
+               ]
+        )
     scene.sm_background = bpy.props.PointerProperty(type=LayerSettings)
     scene.sm_foreground = bpy.props.PointerProperty(type=LayerSettings)
 
 def unregister():
     auto_load.unregister()
     scene = bpy.types.Scene
-    del scene.sm_background, scene.sm_foreground, scene.show_bg_options, scene.show_fg_options
+    del scene.sm_background, scene.sm_foreground, scene.layer_context

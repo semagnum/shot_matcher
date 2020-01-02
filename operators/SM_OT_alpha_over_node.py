@@ -1,5 +1,5 @@
 import bpy
-from ..utils import create_sm_cb_node, validMaxMinRGB
+from ..utils import create_sm_ao_node, validMaxMinRGB
 
 class SM_OT_alpha_over_node(bpy.types.Operator):
     bl_idname = "shot_matcher.alpha_over_node"
@@ -43,7 +43,7 @@ class SM_OT_alpha_over_node(bpy.types.Operator):
                 fg_node.clip = bpy.data.movieclips[fg_layer.layer_name]
             else:
                 fg_node = tree.nodes.new("CompositorNodeImage")
-                fg_node.image = bpy.data.imagesfg_layer.layer_name]
+                fg_node.image = bpy.data.images[fg_layer.layer_name]
             fg_node.location = -300, -500
             tree.links.new(bg_node.outputs[0], group_node.inputs[0])
             tree.links.new(fg_node.outputs[0], group_node.inputs[1])

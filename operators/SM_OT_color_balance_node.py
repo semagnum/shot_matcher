@@ -1,5 +1,5 @@
 import bpy
-from ..utils import create_sm_cb_node, validMaxMinRGB
+from ..utils import validMaxMinRGB
 
 class SM_OT_color_balance_node(bpy.types.Operator):
     bl_idname = "shot_matcher.color_balance_node"
@@ -19,10 +19,8 @@ class SM_OT_color_balance_node(bpy.types.Operator):
             self.report({'ERROR'}, "The white color is less than or equal to the black color")
             return {'FINISHED'}
         
-        cb_node = create_sm_cb_node(context, node_name)
-
-        cb_node = bpy.data.node_groups.get(node_name)
         tree = bpy.context.scene.node_tree
+        cb_node = tree.nodes.get(node_name)
         
         if cb_node is None:    
             #create color balance node
