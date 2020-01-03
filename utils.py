@@ -6,6 +6,12 @@ def get_layer_settings(context):
         return context.scene.sm_background
     return context.scene.sm_foreground
 
+def valid_video_layer(layer):
+    return layer.layer_name is not None and bpy.data.movieclips[layer.layer_name]
+
+def valid_image_layer(layer):
+    return layer.layer_name is not None and bpy.data.images[layer.layer_name]
+
 def frame_analyze(context, image, forceOverwrite):  
     layer = get_layer_settings(context)        
     pixels = np.array(image.pixels)
@@ -63,10 +69,10 @@ def create_sm_ao_node(context, node_group_name):
     image_merge_group = bpy.data.node_groups.get(node_group_name)
     
     if image_merge_group is None:
-        image_merge_group = bpy.data.node_groups.new(type="CompositorNodeTree", name=node_group_name)
+        image_merge_group = bpy.data.node_groups.new(type='CompositorNodeTree', name=node_group_name)
         # create group inputs
-        image_merge_group.inputs.new('NodeSocketColor',"Background")
-        image_merge_group.inputs.new("NodeSocketColor","Foreground")
+        image_merge_group.inputs.new('NodeSocketColor','Background')
+        image_merge_group.inputs.new('NodeSocketColor','Foreground')
         group_inputs = image_merge_group.nodes.new('NodeGroupInput')
         group_inputs.location = (-250,0)
         # create group outputs
@@ -77,16 +83,16 @@ def create_sm_ao_node(context, node_group_name):
         color_node = image_merge_group.nodes.new(type='CompositorNodeColorBalance')              
         color_node.correction_method = 'OFFSET_POWER_SLOPE'      
         #create alpha over node      
-        alpha_over_node = image_merge_group.nodes.new(type="CompositorNodeAlphaOver")
+        alpha_over_node = image_merge_group.nodes.new(type='CompositorNodeAlphaOver')
         alpha_over_node.location = 600, 200
         alpha_over_node.use_premultiply = True               
         #bring it all together
         image_merge_group.links.new(color_node.outputs[0], alpha_over_node.inputs[2])
-        image_merge_group.links.new(group_inputs.outputs["Background"], alpha_over_node.inputs[1])
-        image_merge_group.links.new(group_inputs.outputs["Foreground"], color_node.inputs[1])
+        image_merge_group.links.new(group_inputs.outputs['Background'], alpha_over_node.inputs[1])
+        image_merge_group.links.new(group_inputs.outputs['Foreground'], color_node.inputs[1])
         image_merge_group.links.new(alpha_over_node.outputs[0], group_outputs.inputs['Image'])
 
-    color_node = image_merge_group.nodes.get("Color Balance")
+    color_node = image_merge_group.nodes.get('Color Balance')
     color_node.offset = context.scene.sm_background.min_color - context.scene.sm_foreground.min_color
     color_node.slope = (context.scene.sm_background.max_color - context.scene.sm_background.min_color) / (context.scene.sm_foreground.max_color - context.scene.sm_foreground.min_color)
         

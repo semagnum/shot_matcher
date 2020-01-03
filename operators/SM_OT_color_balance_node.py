@@ -2,21 +2,22 @@ import bpy
 from ..utils import validMaxMinRGB
 
 class SM_OT_color_balance_node(bpy.types.Operator):
-    bl_idname = "shot_matcher.color_balance_node"
-    bl_label = "Apply Analysis to Compositor"
-    bl_description = "Creates a color balance node that maps the max/min values from the foreground to the background layer"
+    bl_idname = 'shot_matcher.color_balance_node'
+    bl_label = 'Shot Matcher: Color Balance'
+    bl_description = 'Creates a color balance node that maps the max/min values from the foreground to the background layer'
     bl_options = {'REGISTER'}
     
     @classmethod
     def poll(cls, context):
-        return context.edit_image is not None
+        scene = context.scene
+        return (scene.sm_background.layer_name is not None) and (scene.sm_foreground.layer_name is not None):
     
     def execute(self, context):
-        node_name = "Color Balance: " + context.edit_image.name
+        node_name = 'Color Balance: ' + scene.sm_foreground.layer_name + ' -> ' + scene.sm_background.layer_name
         context.scene.use_nodes = True
       
         if validMaxMinRGB(context) is False:
-            self.report({'ERROR'}, "The white color is less than or equal to the black color")
+            self.report({'ERROR'}, 'The white color is less than or equal to the black color')
             return {'FINISHED'}
         
         tree = bpy.context.scene.node_tree

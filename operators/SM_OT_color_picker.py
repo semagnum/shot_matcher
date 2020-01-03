@@ -3,9 +3,9 @@ from ..LayerSettings import LayerSettings
 from ..utils import get_layer_settings
 
 class SM_OT_color_picker(bpy.types.Operator):
-    bl_idname = "shot_matcher.color_picker"
-    bl_description = "Use a color picker to select the white and black values"
-    bl_label = "Min Max Color Picker"
+    bl_idname = 'shot_matcher.color_picker'
+    bl_description = 'Use a color picker to select the white and black values'
+    bl_label = 'Min Max Color Picker'
     
     @classmethod
     def poll(cls, context):
@@ -13,9 +13,9 @@ class SM_OT_color_picker(bpy.types.Operator):
 
     def modal(self, context, event):
         
-        context.window.cursor_set("EYEDROPPER")   
+        context.window.cursor_set('EYEDROPPER')   
     
-        context.area.header_text_set(text="Ctrl + Mouse: pick white/black colors, LMB/RMB: finish and apply, ESC: cancel")
+        context.area.header_text_set(text='Ctrl + Mouse: pick white/black colors, LMB/RMB: finish and apply, ESC: cancel')
         
         if event.type == 'MOUSEMOVE':
             if event.ctrl:
@@ -48,10 +48,10 @@ class SM_OT_color_picker(bpy.types.Operator):
             context_layer.max_color = (self.max_r, self.max_g, self.max_b)
             context.area.header_text_set(text=None)
             context.area.tag_redraw()
-            context.window.cursor_set("DEFAULT")
+            context.window.cursor_set('DEFAULT')
             return {'FINISHED'}
         elif event.type == 'ESC':
-            context.window.cursor_set("DEFAULT")
+            context.window.cursor_set('DEFAULT')
             context.area.header_text_set(text=None)
             return {'FINISHED'}
         elif event.type in {'MIDDLEMOUSE', 'WHEELUPMOUSE', 'WHEELDOWNMOUSE'}:
@@ -72,5 +72,5 @@ class SM_OT_color_picker(bpy.types.Operator):
             context.window_manager.modal_handler_add(self)
             return {'RUNNING_MODAL'}
         else:
-            self.report({'WARNING'}, "UV/Image Editor not found, cannot run operator")
+            self.report({'WARNING'}, 'UV/Image Editor not found, cannot run operator')
             return {'CANCELLED'}

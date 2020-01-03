@@ -10,9 +10,9 @@ import importlib
 from pathlib import Path
 
 __all__ = (
-    "init",
-    "register",
-    "unregister",
+    'init',
+    'register',
+    'unregister',
 )
 
 modules = None
@@ -32,7 +32,7 @@ def register():
     for module in modules:
         if module.__name__ == __name__:
             continue
-        if hasattr(module, "register"):
+        if hasattr(module, 'register'):
             module.register()
 
 def unregister():
@@ -42,7 +42,7 @@ def unregister():
     for module in modules:
         if module.__name__ == __name__:
             continue
-        if hasattr(module, "unregister"):
+        if hasattr(module, 'unregister'):
             module.unregister()
 
 
@@ -54,13 +54,13 @@ def get_all_submodules(directory):
 
 def iter_submodules(path, package_name):
     for name in sorted(iter_submodule_names(path)):
-        yield importlib.import_module("." + name, package_name)
+        yield importlib.import_module('.' + name, package_name)
 
-def iter_submodule_names(path, root=""):
+def iter_submodule_names(path, root=''):
     for _, module_name, is_package in pkgutil.iter_modules([str(path)]):
         if is_package:
             sub_path = path / module_name
-            sub_root = root + module_name + "."
+            sub_root = root + module_name + '.'
             yield from iter_submodule_names(sub_path, sub_root)
         else:
             yield root + module_name
@@ -91,14 +91,14 @@ def iter_register_deps(cls):
 def get_dependency_from_annotation(value):
     if isinstance(value, tuple) and len(value) == 2:
         if value[0] in (bpy.props.PointerProperty, bpy.props.CollectionProperty):
-            return value[1]["type"]
+            return value[1]['type']
     return None
 
 def iter_classes_to_register(modules):
     base_types = get_register_base_types()
     for cls in get_classes_in_modules(modules):
         if any(base in base_types for base in cls.__bases__):
-            if not getattr(cls, "is_registered", False):
+            if not getattr(cls, 'is_registered', False):
                 yield cls
 
 def get_classes_in_modules(modules):
@@ -115,10 +115,10 @@ def iter_classes_in_module(module):
 
 def get_register_base_types():
     return set(getattr(bpy.types, name) for name in [
-        "Panel", "Operator", "PropertyGroup",
-        "AddonPreferences", "Header", "Menu",
-        "Node", "NodeSocket", "NodeTree",
-        "UIList", "RenderEngine"
+        'Panel', 'Operator', 'PropertyGroup',
+        'AddonPreferences', 'Header', 'Menu',
+        'Node', 'NodeSocket', 'NodeTree',
+        'UIList', 'RenderEngine'
     ])
 
 
