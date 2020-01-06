@@ -9,8 +9,7 @@ class SM_OT_color_balance_node(bpy.types.Operator):
     
     @classmethod
     def poll(cls, context):
-        scene = context.scene
-        return (scene.sm_background.layer_name is not None) and (scene.sm_foreground.layer_name is not None):
+        return (context.scene.sm_background.layer_name is not None) and (context.scene.sm_foreground.layer_name is not None)
     
     def execute(self, context):
         node_name = 'Color Balance: ' + scene.sm_foreground.layer_name + ' -> ' + scene.sm_background.layer_name
