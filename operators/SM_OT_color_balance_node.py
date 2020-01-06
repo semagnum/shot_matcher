@@ -26,8 +26,9 @@ class SM_OT_color_balance_node(bpy.types.Operator):
         
         if cb_node is None:    
             #create color balance node
-            cb_node = tree.nodes.new(type='CompositorNodeColorBalance', name=node_name)              
+            cb_node = tree.nodes.new(type='CompositorNodeColorBalance')              
             cb_node.correction_method = 'OFFSET_POWER_SLOPE'
+            cb_node.label = node_name
 
         cb_node.offset = bg_layer.min_color - fg_layer.min_color
         cb_node.slope = (bg_layer.max_color - bg_layer.min_color) / (fg_layer.max_color - fg_layer.min_color)
