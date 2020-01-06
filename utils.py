@@ -20,11 +20,11 @@ def frame_analyze(context, image, forceOverwrite):
     ch_r = pixels[0::4]    
     ch_g = pixels[1::4]
     ch_b = pixels[2::4]
-    if layer.sm_use_alpha_threshold:
+    if layer.use_alpha_threshold:
         ch_a = pixels[3::4]
-        ch_r = ch_r[(ch_a >= layer.sm_alpha_threshold)]
-        ch_g = ch_g[(ch_a >= layer.sm_alpha_threshold)]
-        ch_b = ch_b[(ch_a >= layer.sm_alpha_threshold)]
+        ch_r = ch_r[(ch_a >= layer.alpha_threshold)]
+        ch_g = ch_g[(ch_a >= layer.alpha_threshold)]
+        ch_b = ch_b[(ch_a >= layer.alpha_threshold)]
     
     max_r = ch_r.max()
     max_g = ch_g.max()
