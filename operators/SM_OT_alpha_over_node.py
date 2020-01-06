@@ -18,7 +18,9 @@ class SM_OT_alpha_over_node(bpy.types.Operator):
         return bg_valid and fg_valid
     
     def execute(self, context):
-        node_group_name = 'Alpha Over: ' + scene.sm_foreground.layer_name + ' -> ' + scene.sm_background.layer_name
+        bg_layer = context.scene.sm_background
+        fg_layer = context.scene.sm_foreground
+        node_group_name = 'Alpha Over: ' + fg_layer.layer_name + ' -> ' + bg_layer.layer_name
         context.scene.use_nodes = True
       
         if validMaxMinRGB(context) is False:
@@ -29,8 +31,6 @@ class SM_OT_alpha_over_node(bpy.types.Operator):
         
         tree = bpy.context.scene.node_tree
         group_node = tree.nodes.get(node_group_name)
-        bg_layer = context.scene.sm_background
-        fg_layer = context.scene.sm_foreground
         
         if group_node is None:
             group_node = tree.nodes.new('CompositorNodeGroup')
