@@ -7,10 +7,10 @@ def get_layer_settings(context):
     return context.scene.sm_foreground
 
 def valid_video_layer(layer):
-    return layer.layer_name is not None and bpy.data.movieclips[layer.layer_name]
+    return layer.layer_name in bpy.data.movieclips
 
 def valid_image_layer(layer):
-    return layer.layer_name is not None and bpy.data.images[layer.layer_name]
+    return layer.layer_name in bpy.data.images
 
 def frame_analyze(context, image, forceOverwrite):  
     layer = get_layer_settings(context)        
@@ -22,16 +22,28 @@ def frame_analyze(context, image, forceOverwrite):
     ch_b = pixels[2::4]
     if layer.use_alpha_threshold:
         ch_a = pixels[3::4]
-        ch_r = ch_r[(ch_a >= layer.alpha_threshold)]
-        ch_g = ch_g[(ch_a >= layer.alpha_threshold)]
-        ch_b = ch_b[(ch_a >= layer.alpha_threshold)]
     
-    max_r = ch_r.max()
-    max_g = ch_g.max()
-    max_b = ch_b.max()
-    min_r = ch_r.min()
-    min_g = ch_g.min()
-    min_b = ch_b.min()
+    max_r = 0.0
+    max_g = 0.0
+    max_b = 0.0
+    min_r = 10000.0
+    min_g = 10000.0
+    min_b = 10000.0
+
+    maxNewV = 0.0
+    minNewV = 10000.0
+
+    # analyze each pixel based on lightness
+    for index in range(len(ch_r)):
+        if layer.use_alpha_threshold and ch_a[index] < layer.alpha_threshold:
+            continue
+        v = max((ch_r[index], ch_g[index], ch_b[index]))
+        if v > maxNewV:
+            max_r, max_g, max_b = ch_r[index], ch_g[index], ch_b[index]
+            maxNewV = v
+        if v < minNewV:
+            min_r, min_g, min_b = ch_r[index], ch_g[index], ch_b[index]
+            minNewV = v
 
     if forceOverwrite is True:
         layer.max_color = (max_r, max_g, max_b)
@@ -39,27 +51,20 @@ def frame_analyze(context, image, forceOverwrite):
         return True
 
     #we only want to overwrite if the value supersedes the current one
-    maxNewV = RGBtoV(max_r, max_g, max_b)
-    maxCurrentV = RGBtoV(layer.max_color[0], layer.max_color[1], layer.max_color[2])
-
+    maxCurrentV = max(layer.max_color)
     if maxNewV > maxCurrentV:
         layer.max_color = (max_r, max_g, max_b)
 
-    minNewV = RGBtoV(min_r, min_g, min_b)
-    minCurrentV = RGBtoV(layer.min_color[0], layer.min_color[1], layer.min_color[2])
+    minCurrentV = max(layer.min_color)
     if minNewV < minCurrentV:
         layer.min_color = (min_r, min_g, min_b)
     
     return True
 
-def RGBtoV(r, g, b):
-    return max([r, g, b])
-
 def validMaxMinRGB(context):
-
     def validLayerMaxMin(context, layer):
-        minV = RGBtoV(layer.min_color[0], layer.min_color[1], layer.min_color[2])
-        maxV = RGBtoV(layer.max_color[0], layer.max_color[1], layer.max_color[2])
+        minV = max(layer.min_color)
+        maxV = max(layer.max_color)
         return minV <= maxV
     
     return validLayerMaxMin(context, context.scene.sm_background) and validLayerMaxMin(context, context.scene.sm_foreground)
