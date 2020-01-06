@@ -22,28 +22,16 @@ def frame_analyze(context, image, forceOverwrite):
     ch_b = pixels[2::4]
     if layer.use_alpha_threshold:
         ch_a = pixels[3::4]
+        ch_r = ch_r[(ch_a >= layer.alpha_threshold)]
+        ch_g = ch_g[(ch_a >= layer.alpha_threshold)]
+        ch_b = ch_b[(ch_a >= layer.alpha_threshold)]
     
-    max_r = 0.0
-    max_g = 0.0
-    max_b = 0.0
-    min_r = 10000.0
-    min_g = 10000.0
-    min_b = 10000.0
-
-    maxNewV = 0.0
-    minNewV = 10000.0
-
-    # analyze each pixel based on lightness
-    for index in range(len(ch_r)):
-        if layer.use_alpha_threshold and ch_a[index] < layer.alpha_threshold:
-            continue
-        v = max((ch_r[index], ch_g[index], ch_b[index]))
-        if v > maxNewV:
-            max_r, max_g, max_b = ch_r[index], ch_g[index], ch_b[index]
-            maxNewV = v
-        if v < minNewV:
-            min_r, min_g, min_b = ch_r[index], ch_g[index], ch_b[index]
-            minNewV = v
+    max_r = ch_r.max()
+    max_g = ch_g.max()
+    max_b = ch_b.max()
+    min_r = ch_r.min()
+    min_g = ch_g.min()
+    min_b = ch_b.min()
 
     if forceOverwrite is True:
         layer.max_color = (max_r, max_g, max_b)
@@ -51,11 +39,14 @@ def frame_analyze(context, image, forceOverwrite):
         return True
 
     #we only want to overwrite if the value supersedes the current one
-    maxCurrentV = max(layer.max_color)
+    maxNewV = RGBtoV(max_r, max_g, max_b)
+    maxCurrentV = RGBtoV(layer.max_color[0], layer.max_color[1], layer.max_color[2])
+
     if maxNewV > maxCurrentV:
         layer.max_color = (max_r, max_g, max_b)
 
-    minCurrentV = max(layer.min_color)
+    minNewV = RGBtoV(min_r, min_g, min_b)
+    minCurrentV = RGBtoV(layer.min_color[0], layer.min_color[1], layer.min_color[2])
     if minNewV < minCurrentV:
         layer.min_color = (min_r, min_g, min_b)
     
