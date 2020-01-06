@@ -9,7 +9,13 @@ class SM_OT_color_balance_node(bpy.types.Operator):
     
     @classmethod
     def poll(cls, context):
-        return (context.scene.sm_background.layer_name is not None) and (context.scene.sm_foreground.layer_name is not None)
+        bg_layer = context.scene.sm_background
+        fg_layer = context.scene.sm_foreground
+
+        bg_valid = (bg_layer.layer_type == 'video' and valid_video_layer(bg_layer)) or valid_image_layer(bg_layer)
+        fg_valid = (fg_layer.layer_type == 'video' and valid_video_layer(fg_layer)) or valid_image_layer(fg_layer)
+
+        return bg_valid and fg_valid
     
     def execute(self, context):
         bg_layer = context.scene.sm_background
