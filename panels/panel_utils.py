@@ -6,6 +6,7 @@ from ..operators.SM_OT_color_picker import SM_OT_color_picker
 from ..operators.SM_OT_color_reset import SM_OT_color_reset
 from ..operators.SM_OT_image_calculator import SM_OT_image_calculator
 from ..operators.SM_OT_video_calculator import SM_OT_video_calculator
+from ..operators.SM_OT_set_selected import SM_OT_set_selected
 
 from ..utils import get_layer_settings
 
@@ -19,11 +20,11 @@ def draw_layer(itself, context, sm_layer):
     if sm_layer.layer_type == 'video':
         box.prop_search(sm_layer, "layer_name", bpy.data, "movieclips", text='File', icon='FILE_MOVIE')
         if itself.bl_space_type == 'CLIP_EDITOR':
-            box.operator("object.select_all", text="Use Current Clip", icon='WINDOW')
+            box.operator(SM_OT_set_selected.bl_idname, text="Use Current Clip", icon='WINDOW').space_type = 'CLIP_EDITOR'
     else:
         box.prop_search(sm_layer, "layer_name", bpy.data, "images", text='File', icon='FILE_IMAGE')
         if itself.bl_space_type == 'IMAGE_EDITOR':
-            box.operator("object.select_all", text="Use Current Image", icon='WINDOW')
+            box.operator(SM_OT_set_selected.bl_idname, text="Use Current Image", icon='WINDOW').space_type = 'IMAGE_EDITOR'
         
     box.prop(sm_layer, "use_alpha_threshold")
     if sm_layer.use_alpha_threshold:
