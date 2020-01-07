@@ -39,14 +39,14 @@ def frame_analyze(context, image, forceOverwrite):
         return True
 
     #we only want to overwrite if the value supersedes the current one
-    maxNewV = RGBtoV(max_r, max_g, max_b)
-    maxCurrentV = RGBtoV(layer.max_color[0], layer.max_color[1], layer.max_color[2])
+    maxNewV = max(max_r, max_g, max_b)
+    maxCurrentV = max(layer.max_color)
 
     if maxNewV > maxCurrentV:
         layer.max_color = (max_r, max_g, max_b)
 
-    minNewV = RGBtoV(min_r, min_g, min_b)
-    minCurrentV = RGBtoV(layer.min_color[0], layer.min_color[1], layer.min_color[2])
+    minNewV = max(min_r, min_g, min_b)
+    minCurrentV = max(layer.min_color)
     if minNewV < minCurrentV:
         layer.min_color = (min_r, min_g, min_b)
     
