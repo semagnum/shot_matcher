@@ -11,7 +11,7 @@ class SM_OT_set_selected(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.edit_image is not None or context.edit_movieclip is not None
+        return hasattr(context, 'edit_image') or hasattr(context, 'edit_movieclip')
     
     def execute(self, context):
         media_name = ''
