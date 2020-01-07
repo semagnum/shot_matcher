@@ -1,5 +1,5 @@
 import bpy
-from ..utils import validMaxMinRGB
+from ..utils import validMaxMinRGB, valid_video_layer, valid_image_layer
 
 class SM_OT_color_balance_node(bpy.types.Operator):
     bl_idname = 'shot_matcher.color_balance_node'
