@@ -11,8 +11,7 @@ class SM_OT_set_selected(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        current_layer = get_layer_settings(context)
-        return (current_layer.layer_type == 'video' and valid_video_layer(current_layer)) or valid_image_layer(current_layer)
+        return context.edit_image is not None or context.edit_movieclip is not None
     
     def execute(self, context):
         media_name = ''
