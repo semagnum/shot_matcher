@@ -1,5 +1,5 @@
 import bpy
-from ..utils import validMaxMinRGB, valid_video_layer, valid_image_layer
+from ..utils import validMaxMinRGB, valid_video_layer, valid_image_layer, colorDivision
 
 class SM_OT_color_balance_node(bpy.types.Operator):
     bl_idname = 'shot_matcher.color_balance_node'
@@ -37,6 +37,8 @@ class SM_OT_color_balance_node(bpy.types.Operator):
             cb_node.label = node_name
 
         cb_node.offset = bg_layer.min_color - fg_layer.min_color
-        cb_node.slope = (bg_layer.max_color - bg_layer.min_color) / (fg_layer.max_color - fg_layer.min_color)
+        bg_slope = bg_layer.max_color - bg_layer.min_color
+        fg_slope = fg_layer.max_color - fg_layer.min_color
+        cb_node.slope = colorDivision(bg_slope, fg_slope)
                 
         return {'FINISHED'}
