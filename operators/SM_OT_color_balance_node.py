@@ -28,7 +28,7 @@ class SM_OT_color_balance_node(bpy.types.Operator):
             return {'FINISHED'}
         
         tree = bpy.context.scene.node_tree
-        cb_node = tree.nodes.get(node_name)
+        cb_node = next((node for node in tree.nodes if node.label == node_name), None)
         
         if cb_node is None:    
             #create color balance node
