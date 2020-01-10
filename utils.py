@@ -60,6 +60,9 @@ def validMaxMinRGB(context):
     
     return validLayerMaxMin(context, context.scene.sm_background) and validLayerMaxMin(context, context.scene.sm_foreground)
 
+def colorDivision(color1, color2):
+   return (color1[0] / color2[0], color1[1] / color2[1], color1[2] / color2[2])
+
 def create_sm_ao_node(context, node_group_name):
     # create a group
     image_merge_group = bpy.data.node_groups.get(node_group_name)
@@ -90,6 +93,8 @@ def create_sm_ao_node(context, node_group_name):
 
     color_node = image_merge_group.nodes.get('Color Balance')
     color_node.offset = context.scene.sm_background.min_color - context.scene.sm_foreground.min_color
-    color_node.slope = (context.scene.sm_background.max_color - context.scene.sm_background.min_color) / (context.scene.sm_foreground.max_color - context.scene.sm_foreground.min_color)
+    bg_slope = bg_layer.max_color - bg_layer.min_color
+    fg_slope = fg_layer.max_color - fg_layer.min_color
+    color_node.slope = colorDivision(bg_slope, fg_slope)
         
     return image_merge_group
