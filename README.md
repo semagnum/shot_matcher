@@ -10,14 +10,14 @@ This simply takes the white and black RGB values for the selected image or video
 Since it's unnecessary to analyze every frame of the movie clip, there's frame start, end and step fields.  Use these fields wisely, so you can balance between getting an accurate analysis while keeping the calculation time low.  For the movie clip editor, the frame start and end fields must be within the length of the video in order to be analyzed.  This is to prevent the frame analyzer to look at empty/missing frames.
 
 ## Color Picker
-You use this just like a Blender color picker: hold Ctrl while you move the mouse to color pick, left click or right click to apply and finish, or "Escape" to cancel.  It will then take the lowest and highest R, G, and B values and update the panel's color values.
+While the color picker is on, hold Ctrl while you move the mouse to color pick, left click or right click to apply and finish, or "Escape" to cancel.  It will then take the "white" and "black" values picked and update the panel's color values.
 
-This is useful for when you need a black or white value of a certain area.  Some areas of an image have different color ranges than other parts.  So the color picker is helpful to isolate these areas.  The picker compares its results to the black and white values you currently have, so if you don't find a darker black or whiter white, it'll stay as it is.
+This is useful for when you need the black or white values of a certain area.  Some areas of an image have different color ranges, like when there is multiple lights of different types in a shot.  Use the color picker to isolate these areas.  The picker compares its results to the black and white values you currently have, so if you don't find a darker black or whiter white, the current values will stay as it is.
 
 Note: this feature is only available for the image editor.  If you'd need to color pick a movie clip frame, here's a workaround.  You can load video files into the UV editor, switch to the frame in the right panel (Image > Offset value field).
 
 ### Reset Color Picker
-This is for your color picker, in case you accidentally pick an area that will throw off your black or white values.  This resets your min color to absolute white, and your max color to absolute black.
+This is for your color picker, in case you accidentally picked an area that throws off your black or white values.  This resets your min color to absolute white, and your max color to absolute black.
 
 ## Applying to the Compositor
 
