@@ -92,7 +92,9 @@ def create_sm_ao_node(context, node_group_name):
         image_merge_group.links.new(alpha_over_node.outputs[0], group_outputs.inputs['Image'])
 
     color_node = image_merge_group.nodes.get('Color Balance')
-    color_node.offset = context.scene.sm_background.min_color - context.scene.sm_foreground.min_color
+    bg_layer = context.scene.sm_background
+    fg_layer = context.scene.sm_foreground
+    color_node.offset = bg_layer.min_color - fg_layer.min_color
     bg_slope = bg_layer.max_color - bg_layer.min_color
     fg_slope = fg_layer.max_color - fg_layer.min_color
     color_node.slope = colorDivision(bg_slope, fg_slope)
