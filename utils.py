@@ -94,9 +94,12 @@ def create_sm_ao_node(context, node_group_name):
     color_node = image_merge_group.nodes.get('Color Balance')
     bg_layer = context.scene.sm_background
     fg_layer = context.scene.sm_foreground
-    color_node.offset = bg_layer.min_color - fg_layer.min_color
     bg_slope = bg_layer.max_color - bg_layer.min_color
     fg_slope = fg_layer.max_color - fg_layer.min_color
-    color_node.slope = colorDivision(bg_slope, fg_slope)
+    try:
+        color_node.slope = colorDivision(bg_slope, fg_slope)
+    except:
+        raise ZeroDivisionError('Failed: division by zero ([foreground white color] - [foreground black color] must not equal zero!)')
+    color_node.offset = bg_layer.min_color - fg_layer.min_color
         
     return image_merge_group

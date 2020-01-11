@@ -27,7 +27,11 @@ class SM_OT_alpha_over_node(bpy.types.Operator):
             self.report({'ERROR'}, 'The white color is less than or equal to the black color')
             return {'FINISHED'}
         
-        alpha_over_group = create_sm_ao_node(context, node_group_name)
+        try:
+            alpha_over_group = create_sm_ao_node(context, node_group_name)
+        except ZeroDivisionError as err:
+            self.report({'ERROR'}, err)
+            return {'FINISHED'}
         
         tree = bpy.context.scene.node_tree
         group_node = tree.nodes.get(node_group_name)

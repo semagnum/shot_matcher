@@ -36,9 +36,13 @@ class SM_OT_color_balance_node(bpy.types.Operator):
             cb_node.correction_method = 'OFFSET_POWER_SLOPE'
             cb_node.label = node_name
 
-        cb_node.offset = bg_layer.min_color - fg_layer.min_color
         bg_slope = bg_layer.max_color - bg_layer.min_color
         fg_slope = fg_layer.max_color - fg_layer.min_color
-        cb_node.slope = colorDivision(bg_slope, fg_slope)
+        try:
+            cb_node.slope = colorDivision(bg_slope, fg_slope)
+        except:
+            self.report({'ERROR'}, 'Failed: division by zero ([foreground white color] - [foreground black color] must not equal zero!)')
+            return {'FINISHED'}
+        cb_node.offset = bg_layer.min_color - fg_layer.min_color
                 
         return {'FINISHED'}
