@@ -10,13 +10,13 @@ class SM_OT_image_calculator(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-       return valid_image_layer(get_layer_settings(context))
+        layer = get_layer_settings(context)
+        return valid_image_layer(layer) and bpy.data.images[layer.layer_name].pixels
     
     def execute(self, context):
         context.window.cursor_set('WAIT')
 
-        context_layer = get_layer_settings(context)
-        frame_analyze(context, bpy.data.images[context_layer.layer_name], True)
+        frame_analyze(context, bpy.data.images[get_layer_settings(context).layer_name], True)
         
         context.window.cursor_set('DEFAULT')
         return {'FINISHED'}
