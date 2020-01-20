@@ -1,5 +1,5 @@
 import bpy
-from ..utils import create_sm_ao_node, validMaxMinRGB, get_layer_settings, valid_image_layer, valid_video_layer
+from ..utils import create_sm_ao_node, validMaxMinRGB, get_layer_settings, valid_image_layer, valid_video_layer, truncate_name
 
 class SM_OT_alpha_over_node(bpy.types.Operator):
     bl_idname = 'shot_matcher.alpha_over_node'
@@ -20,7 +20,7 @@ class SM_OT_alpha_over_node(bpy.types.Operator):
     def execute(self, context):
         bg_layer = context.scene.sm_background
         fg_layer = context.scene.sm_foreground
-        node_group_name = 'Alpha Over: ' + fg_layer.layer_name + ' -> ' + bg_layer.layer_name
+        node_group_name = 'AO: ' + truncate_name(fg_layer.layer_name, 12) + ' -> ' + truncate_name(bg_layer.layer_name, 12)
         context.scene.use_nodes = True
       
         if validMaxMinRGB(context) is False:

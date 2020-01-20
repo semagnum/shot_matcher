@@ -6,6 +6,9 @@ def get_layer_settings(context):
         return context.scene.sm_background
     return context.scene.sm_foreground
 
+def truncate_name(name, limit):
+    return (name[:(limit - 3)] + '...') if len(name) > limit else name
+
 def valid_video_layer(layer):
     return layer.layer_name in bpy.data.movieclips
 
