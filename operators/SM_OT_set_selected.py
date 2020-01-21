@@ -1,5 +1,5 @@
 import bpy
-from ..utils import get_layer_settings, valid_video_layer, valid_image_layer
+from ..utils import get_layer_settings
 
 class SM_OT_set_selected(bpy.types.Operator):
     bl_idname = 'shot_matcher.set_selected'
