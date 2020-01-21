@@ -10,7 +10,7 @@ class SM_OT_video_calculator(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return layer.layer_name in bpy.data.movieclips
+        return get_layer_settings(context).layer_name in bpy.data.movieclips
     
     def execute(self, context):
         context_layer = get_layer_settings(context)
