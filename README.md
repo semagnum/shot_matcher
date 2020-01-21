@@ -12,7 +12,7 @@ Since it's unnecessary to analyze every frame of the movie clip, there's frame s
 ## Color Picker
 While the color picker is on, hold Ctrl while you move the mouse to color pick, left click or right click to apply and finish, or "Escape" to cancel.  It will then take the "white" and "black" values picked and update the panel's color values.
 
-This is useful for when you need the black or white values of a certain area.  Some areas of an image have different color ranges, like when there is multiple lights of different types in a shot.  Use the color picker to isolate these areas.  The picker compares its results to the black and white values you currently have, so if you don't find a darker black or whiter white, the current values will stay as it is.
+This is useful for when you need the black or white values of a certain area.  Some areas of an image have different color ranges, like when there is multiple lights of different types in a shot.  Use the color picker to isolate these areas.  The picker compares its results to the black and white values you currently have, so if you don't find a darker black or whiter white, the current values will stay as it is.  Furthermore, the picker takes your alpha threshold settings into account, so you can pick transparent images as well.
 
 Note: this feature is only available for the image editor.  If you'd need to color pick a movie clip frame, here's a workaround.  You can load video files into the UV editor, switch to the frame in the right panel (Image > Offset value field).
 

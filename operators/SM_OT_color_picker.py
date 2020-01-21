@@ -16,7 +16,7 @@ class SM_OT_color_picker(bpy.types.Operator):
         context.window.cursor_set('EYEDROPPER')   
     
         context.area.header_text_set(text='Ctrl + Mouse: pick white/black colors, LMB/RMB: finish and apply, ESC: cancel')
-        
+        context_layer = get_layer_settings(context)
         if event.type == 'MOUSEMOVE':
             if event.ctrl:
                 mouse_x = event.mouse_x - context.region.x
@@ -27,7 +27,9 @@ class SM_OT_color_picker(bpy.types.Operator):
                 x = int(size_x * uv[0]) % size_x
                 y = int(size_y * uv[1]) % size_y
                 offset = (y * size_x + x) * 4
-                pixels = img.pixels[offset:offset+3]
+                pixels = img.pixels[offset:offset+4]
+                if context_layer.use_alpha_threshold and context_layer.alpha_threshold > pixels[3]:
+                    return {'RUNNING_MODAL'}
                 #check max for each channel
                 if pixels[0] > self.max_r:
                     self.max_r = pixels[0]
@@ -43,7 +45,6 @@ class SM_OT_color_picker(bpy.types.Operator):
                 if pixels[2] < self.min_b:
                     self.min_b = pixels[2]        
         elif event.type in {'RIGHTMOUSE', 'LEFTMOUSE'}:
-            context_layer = get_layer_settings(context)
             context_layer.min_color = (self.min_r, self.min_g, self.min_b)
             context_layer.max_color = (self.max_r, self.max_g, self.max_b)
             context.area.header_text_set(text=None)
