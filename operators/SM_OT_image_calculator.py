@@ -1,5 +1,5 @@
 import bpy
-from ..utils import frame_analyze, get_layer_settings, valid_image_layer
+from ..utils import frame_analyze, get_layer_settings
 from ..LayerSettings import LayerSettings
 
 class SM_OT_image_calculator(bpy.types.Operator):
@@ -11,7 +11,7 @@ class SM_OT_image_calculator(bpy.types.Operator):
     @classmethod
     def poll(cls, context):
         layer = get_layer_settings(context)
-        return valid_image_layer(layer) and bpy.data.images[layer.layer_name].pixels
+        return (layer.layer_name in bpy.data.images) and bpy.data.images[layer.layer_name].pixels
     
     def execute(self, context):
         context.window.cursor_set('WAIT')

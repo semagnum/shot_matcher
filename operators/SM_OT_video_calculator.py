@@ -1,5 +1,5 @@
 import bpy
-from ..utils import frame_analyze, get_layer_settings, valid_video_layer
+from ..utils import frame_analyze, get_layer_settings
 from ..LayerSettings import LayerSettings
 
 class SM_OT_video_calculator(bpy.types.Operator):
@@ -10,7 +10,7 @@ class SM_OT_video_calculator(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return valid_video_layer(get_layer_settings(context))
+        return layer.layer_name in bpy.data.movieclips
     
     def execute(self, context):
         context_layer = get_layer_settings(context)

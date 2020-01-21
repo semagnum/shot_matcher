@@ -1,21 +1,11 @@
 import bpy
-from ..utils import validMaxMinRGB, valid_video_layer, valid_image_layer, colorDivision, truncate_name
+from ..utils import validMaxMinRGB, colorDivision, truncate_name
 
 class SM_OT_color_balance_node(bpy.types.Operator):
     bl_idname = 'shot_matcher.color_balance_node'
     bl_label = 'Shot Matcher: Color Balance'
     bl_description = 'Creates a color balance node that maps the max/min values from the foreground to the background layer'
     bl_options = {'REGISTER'}
-    
-    @classmethod
-    def poll(cls, context):
-        bg_layer = context.scene.sm_background
-        fg_layer = context.scene.sm_foreground
-
-        bg_valid = (bg_layer.layer_type == 'video' and valid_video_layer(bg_layer)) or valid_image_layer(bg_layer)
-        fg_valid = (fg_layer.layer_type == 'video' and valid_video_layer(fg_layer)) or valid_image_layer(fg_layer)
-
-        return bg_valid and fg_valid
     
     def execute(self, context):
         bg_layer = context.scene.sm_background

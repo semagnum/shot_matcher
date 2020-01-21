@@ -9,12 +9,6 @@ def get_layer_settings(context):
 def truncate_name(name, limit):
     return (name[:(limit - 3)] + '...') if len(name) > limit else name
 
-def valid_video_layer(layer):
-    return layer.layer_name in bpy.data.movieclips
-
-def valid_image_layer(layer):
-    return layer.layer_name in bpy.data.images
-
 def frame_analyze(context, image, forceOverwrite):  
     layer = get_layer_settings(context)        
     pixels = np.array(image.pixels)
