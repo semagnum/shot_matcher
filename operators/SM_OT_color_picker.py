@@ -1,10 +1,11 @@
 import bpy
-from .. import globalProps
+from ..LayerSettings import LayerSettings
+from ..utils import get_layer_settings
 
 class SM_OT_color_picker(bpy.types.Operator):
-    bl_idname = "color_matching_analyzer.color_picker"
-    bl_description = "Enables a color picker that selects only the maximum and minimum values"
-    bl_label = "Min Max Color Picker"
+    bl_idname = 'shot_matcher.color_picker'
+    bl_description = 'Use a color picker to select the white and black values'
+    bl_label = 'Min Max Color Picker'
     
     @classmethod
     def poll(cls, context):
@@ -12,10 +13,10 @@ class SM_OT_color_picker(bpy.types.Operator):
 
     def modal(self, context, event):
         
-        context.window.cursor_set("EYEDROPPER")   
+        context.window.cursor_set('EYEDROPPER')   
     
-        context.area.header_text_set(text="Ctrl + Mouse: pick white/black colors, LMB/RMB: finish and apply, ESC: cancel")
-        
+        context.area.header_text_set(text='Ctrl + Mouse: pick white/black colors, LMB/RMB: finish and apply, ESC: cancel')
+        context_layer = get_layer_settings(context)
         if event.type == 'MOUSEMOVE':
             if event.ctrl:
                 mouse_x = event.mouse_x - context.region.x
@@ -26,7 +27,9 @@ class SM_OT_color_picker(bpy.types.Operator):
                 x = int(size_x * uv[0]) % size_x
                 y = int(size_y * uv[1]) % size_y
                 offset = (y * size_x + x) * 4
-                pixels = img.pixels[offset:offset+3]
+                pixels = img.pixels[offset:offset+4]
+                if context_layer.use_alpha_threshold and context_layer.alpha_threshold > pixels[3]:
+                    return {'RUNNING_MODAL'}
                 #check max for each channel
                 if pixels[0] > self.max_r:
                     self.max_r = pixels[0]
@@ -42,14 +45,14 @@ class SM_OT_color_picker(bpy.types.Operator):
                 if pixels[2] < self.min_b:
                     self.min_b = pixels[2]        
         elif event.type in {'RIGHTMOUSE', 'LEFTMOUSE'}:
-            context.scene.min_color = (self.min_r, self.min_g, self.min_b)
-            context.scene.max_color = (self.max_r, self.max_g, self.max_b)
+            context_layer.min_color = (self.min_r, self.min_g, self.min_b)
+            context_layer.max_color = (self.max_r, self.max_g, self.max_b)
             context.area.header_text_set(text=None)
             context.area.tag_redraw()
-            context.window.cursor_set("DEFAULT")
+            context.window.cursor_set('DEFAULT')
             return {'FINISHED'}
         elif event.type == 'ESC':
-            context.window.cursor_set("DEFAULT")
+            context.window.cursor_set('DEFAULT')
             context.area.header_text_set(text=None)
             return {'FINISHED'}
         elif event.type in {'MIDDLEMOUSE', 'WHEELUPMOUSE', 'WHEELDOWNMOUSE'}:
@@ -58,16 +61,17 @@ class SM_OT_color_picker(bpy.types.Operator):
         return {'RUNNING_MODAL'}
     
     def invoke(self, context, event):
-        self.min_r = context.scene.min_color[0]
-        self.min_g = context.scene.min_color[1]
-        self.min_b = context.scene.min_color[2]
-        self.max_r = context.scene.max_color[0]
-        self.max_g = context.scene.max_color[1]
-        self.max_b = context.scene.max_color[2]
+        context_layer = get_layer_settings(context)
+        self.min_r = context_layer.min_color[0]
+        self.min_g = context_layer.min_color[1]
+        self.min_b = context_layer.min_color[2]
+        self.max_r = context_layer.max_color[0]
+        self.max_g = context_layer.max_color[1]
+        self.max_b = context_layer.max_color[2]
         
         if context.area.type == 'IMAGE_EDITOR' and context.edit_image is not None:
             context.window_manager.modal_handler_add(self)
             return {'RUNNING_MODAL'}
         else:
-            self.report({'WARNING'}, "UV/Image Editor not found, cannot run operator")
+            self.report({'WARNING'}, 'UV/Image Editor not found, cannot run operator')
             return {'CANCELLED'}

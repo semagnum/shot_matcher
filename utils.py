@@ -1,18 +1,27 @@
 import bpy
 import numpy as np
 
-def frame_analyze(context, image, forceOverwrite):          
+def get_layer_settings(context):
+    if context.scene.layer_context == 'bg':
+        return context.scene.sm_background
+    return context.scene.sm_foreground
+
+def truncate_name(name, limit):
+    return (name[:(limit - 3)] + '...') if len(name) > limit else name
+
+def frame_analyze(context, image, forceOverwrite):  
+    layer = get_layer_settings(context)        
     pixels = np.array(image.pixels)
     
     #slice the pixels into the RGB channels
     ch_r = pixels[0::4]    
     ch_g = pixels[1::4]
     ch_b = pixels[2::4]
-    if context.scene.sm_use_alpha_threshold:
+    if layer.use_alpha_threshold:
         ch_a = pixels[3::4]
-        ch_r = ch_r[(ch_a >= context.scene.sm_alpha_threshold)]
-        ch_g = ch_g[(ch_a >= context.scene.sm_alpha_threshold)]
-        ch_b = ch_b[(ch_a >= context.scene.sm_alpha_threshold)]
+        ch_r = ch_r[(ch_a >= layer.alpha_threshold)]
+        ch_g = ch_g[(ch_a >= layer.alpha_threshold)]
+        ch_b = ch_b[(ch_a >= layer.alpha_threshold)]
     
     max_r = ch_r.max()
     max_g = ch_g.max()
@@ -22,43 +31,44 @@ def frame_analyze(context, image, forceOverwrite):
     min_b = ch_b.min()
 
     if forceOverwrite is True:
-        context.scene.max_color = (max_r, max_g, max_b)
-        context.scene.min_color = (min_r, min_g, min_b)
+        layer.max_color = (max_r, max_g, max_b)
+        layer.min_color = (min_r, min_g, min_b)
         return True
 
     #we only want to overwrite if the value supersedes the current one
-    maxNewV = RGBtoV(max_r, max_g, max_b)
-    maxCurrentV = RGBtoV(context.scene.max_color[0], context.scene.max_color[1], context.scene.max_color[2])
+    maxNewV = max(max_r, max_g, max_b)
+    maxCurrentV = max(layer.max_color)
 
     if maxNewV > maxCurrentV:
-        context.scene.max_color = (max_r, max_g, max_b)
+        layer.max_color = (max_r, max_g, max_b)
 
-    minNewV = RGBtoV(min_r, min_g, min_b)
-    minCurrentV = RGBtoV(context.scene.min_color[0], context.scene.min_color[1], context.scene.min_color[2])
+    minNewV = max(min_r, min_g, min_b)
+    minCurrentV = max(layer.min_color)
     if minNewV < minCurrentV:
-        context.scene.min_color = (min_r, min_g, min_b)
+        layer.min_color = (min_r, min_g, min_b)
     
     return True
 
-def RGBtoV(r, g, b):
-    RGBList = [r, g, b]
-    return max(RGBList)
-
 def validMaxMinRGB(context):
-    minV = RGBtoV(context.scene.min_color[0], context.scene.min_color[1], context.scene.min_color[2])
-    maxV = RGBtoV(context.scene.max_color[0], context.scene.max_color[1], context.scene.max_color[2])
-  
-    return minV <= maxV
+    def validLayerMaxMin(context, layer):
+        minV = max(layer.min_color)
+        maxV = max(layer.max_color)
+        return minV <= maxV
+    
+    return validLayerMaxMin(context, context.scene.sm_background) and validLayerMaxMin(context, context.scene.sm_foreground)
 
-def create_sm_node(context, node_group_name):
+def colorDivision(color1, color2):
+   return (color1[0] / color2[0], color1[1] / color2[1], color1[2] / color2[2])
+
+def create_sm_ao_node(context, node_group_name):
     # create a group
     image_merge_group = bpy.data.node_groups.get(node_group_name)
     
     if image_merge_group is None:
-        image_merge_group = bpy.data.node_groups.new(type="CompositorNodeTree", name=node_group_name)
+        image_merge_group = bpy.data.node_groups.new(type='CompositorNodeTree', name=node_group_name)
         # create group inputs
-        image_merge_group.inputs.new("NodeSocketColor","Background")
-        image_merge_group.inputs.new("NodeSocketColor","Foreground")
+        image_merge_group.inputs.new('NodeSocketColor','Background')
+        image_merge_group.inputs.new('NodeSocketColor','Foreground')
         group_inputs = image_merge_group.nodes.new('NodeGroupInput')
         group_inputs.location = (-250,0)
         # create group outputs
@@ -69,17 +79,24 @@ def create_sm_node(context, node_group_name):
         color_node = image_merge_group.nodes.new(type='CompositorNodeColorBalance')              
         color_node.correction_method = 'OFFSET_POWER_SLOPE'      
         #create alpha over node      
-        alpha_over_node = image_merge_group.nodes.new(type="CompositorNodeAlphaOver")
+        alpha_over_node = image_merge_group.nodes.new(type='CompositorNodeAlphaOver')
         alpha_over_node.location = 600, 200
         alpha_over_node.use_premultiply = True               
         #bring it all together
         image_merge_group.links.new(color_node.outputs[0], alpha_over_node.inputs[2])
-        image_merge_group.links.new(group_inputs.outputs["Background"], alpha_over_node.inputs[1])
-        image_merge_group.links.new(group_inputs.outputs["Foreground"], color_node.inputs[1])
+        image_merge_group.links.new(group_inputs.outputs['Background'], alpha_over_node.inputs[1])
+        image_merge_group.links.new(group_inputs.outputs['Foreground'], color_node.inputs[1])
         image_merge_group.links.new(alpha_over_node.outputs[0], group_outputs.inputs['Image'])
 
-    color_node = image_merge_group.nodes.get("Color Balance")
-    color_node.offset = context.scene.min_color
-    color_node.slope = context.scene.max_color - context.scene.min_color
+    color_node = image_merge_group.nodes.get('Color Balance')
+    bg_layer = context.scene.sm_background
+    fg_layer = context.scene.sm_foreground
+    bg_slope = bg_layer.max_color - bg_layer.min_color
+    fg_slope = fg_layer.max_color - fg_layer.min_color
+    try:
+        color_node.slope = colorDivision(bg_slope, fg_slope)
+    except:
+        raise ZeroDivisionError('Failed: division by zero ([foreground white color] - [foreground black color] must not equal zero!)')
+    color_node.offset = bg_layer.min_color - fg_layer.min_color
         
     return image_merge_group
