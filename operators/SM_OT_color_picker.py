@@ -12,7 +12,6 @@ class SM_OT_color_picker(bpy.types.Operator):
         return context.edit_image is not None and context.edit_image.pixels
 
     def modal(self, context, event):
-        
         context.window.cursor_set('EYEDROPPER')   
     
         context.area.header_text_set(text='Ctrl + Mouse: pick white/black colors, LMB/RMB: finish and apply, ESC: cancel')
@@ -31,31 +30,32 @@ class SM_OT_color_picker(bpy.types.Operator):
                 if context_layer.use_alpha_threshold and context_layer.alpha_threshold > pixels[3]:
                     return {'RUNNING_MODAL'}
                 #check max for each channel
-                if pixels[0] > self.max_r:
-                    self.max_r = pixels[0]
-                if pixels[1] > self.max_g:
-                    self.max_g = pixels[1]
-                if pixels[2] > self.max_b:
-                    self.max_b = pixels[2]                
+                if pixels[0] > context_layer.max_color[0]:
+                    context_layer.max_color[0] = pixels[0]
+                if pixels[1] > context_layer.max_color[1]:
+                    context_layer.max_color[1] = pixels[1]
+                if pixels[2] > context_layer.max_color[2]:
+                    context_layer.max_color[2] = pixels[2]                
                 #check min for each channel
-                if pixels[0] < self.min_r:
-                    self.min_r = pixels[0]
-                if pixels[1] < self.min_g:
-                    self.min_g = pixels[1]
-                if pixels[2] < self.min_b:
-                    self.min_b = pixels[2]        
-        elif event.type in {'RIGHTMOUSE', 'LEFTMOUSE'}:
-            context_layer.min_color = (self.min_r, self.min_g, self.min_b)
-            context_layer.max_color = (self.max_r, self.max_g, self.max_b)
+                if pixels[0] < context_layer.min_color[0]:
+                    context_layer.min_color[0] = pixels[0]
+                if pixels[1] < context_layer.min_color[1]:
+                    context_layer.min_color[1] = pixels[1]
+                if pixels[2] < context_layer.min_color[2]:
+                    context_layer.min_color[2] = pixels[2]
+                context.area.tag_redraw()
+        elif event.type in {'RIGHTMOUSE', 'LEFTMOUSE'}: # accept color pick
             context.area.header_text_set(text=None)
             context.area.tag_redraw()
             context.window.cursor_set('DEFAULT')
             return {'FINISHED'}
-        elif event.type == 'ESC':
+        elif event.type == 'ESC': # reset to original colors
+            context_layer.min_color = (self.min_r, self.min_g, self.min_b)
+            context_layer.max_color = (self.max_r, self.max_g, self.max_b)
             context.window.cursor_set('DEFAULT')
             context.area.header_text_set(text=None)
             return {'FINISHED'}
-        elif event.type in {'MIDDLEMOUSE', 'WHEELUPMOUSE', 'WHEELDOWNMOUSE'}:
+        elif event.type in {'MIDDLEMOUSE', 'WHEELUPMOUSE', 'WHEELDOWNMOUSE'}: # allow navigation shortcuts
             return {'PASS_THROUGH'}
         
         return {'RUNNING_MODAL'}
