@@ -40,8 +40,8 @@ class SM_OT_video_calculator(bpy.types.Operator):
         for space in viewer_area.spaces:
             if space.type == 'IMAGE_EDITOR':
                 viewer_space = space
-
-        viewer_space.image = bpy.data.images.load(movie_clip.filepath)
+        movie_image = bpy.data.images.load(movie_clip.filepath)
+        viewer_space.image = movie_image
 
         #the frame_offset property starts at 0 index, so first frame is actually 0
         frame = context_layer.start_frame - 1
@@ -50,14 +50,13 @@ class SM_OT_video_calculator(bpy.types.Operator):
             #switch back and forth to force refresh
             viewer_space.display_channels = 'COLOR'
             viewer_space.display_channels = 'COLOR_ALPHA'
-            frame_analyze(context, viewer_space.image, (frame == context_layer.start_frame - 1))
-            self.report({'INFO'}, 'Analyzing frame {}'.format(frame + 1))
-
-        viewer_space.image.user_clear()
-        bpy.data.images.remove(viewer_space.image)        
+            frame_analyze(context, movie_image, (frame == context_layer.start_frame - 1))
+            self.report({'INFO'}, 'Shot Matcher: Analyzing frame {} for {}'.format(frame + 1, movie_image.name))        
         
         context.window.cursor_set('DEFAULT')
         if previousAreaType is not None:
             viewer_area.type = previousAreaType
+            
+        movie_image.user_clear()
         
         return {'FINISHED'}
