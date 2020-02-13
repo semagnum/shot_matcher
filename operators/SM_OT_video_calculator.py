@@ -41,8 +41,9 @@ class SM_OT_video_calculator(bpy.types.Operator):
             if space.type == 'IMAGE_EDITOR':
                 viewer_space = space
         
-        movie_image = bpy.data.images[movie_clip.name]
-        if movie_image is None:
+        if movie_clip.name in bpy.data.images:
+            movie_image = bpy.data.images[movie_clip.name]
+        else:
             movie_image = bpy.data.images.load(movie_clip.filepath)
         viewer_space.image = movie_image
 
