@@ -7,7 +7,7 @@ class SM_OT_set_selected(bpy.types.Operator):
     bl_description = 'Sets the layer to the current image/video shown'
     bl_options = {'REGISTER'}
 
-    space_type = bpy.props.StringProperty()
+    space_type: bpy.props.StringProperty()
 
     @classmethod
     def poll(cls, context):
