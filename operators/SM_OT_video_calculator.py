@@ -40,7 +40,10 @@ class SM_OT_video_calculator(bpy.types.Operator):
         for space in viewer_area.spaces:
             if space.type == 'IMAGE_EDITOR':
                 viewer_space = space
-        movie_image = bpy.data.images.load(movie_clip.filepath)
+        
+        movie_image = bpy.data.images[movie_clip.name]
+        if movie_image is None:
+            movie_image = bpy.data.images.load(movie_clip.filepath)
         viewer_space.image = movie_image
 
         #the frame_offset property starts at 0 index, so first frame is actually 0
@@ -54,6 +57,7 @@ class SM_OT_video_calculator(bpy.types.Operator):
             self.report({'INFO'}, 'Shot Matcher: Analyzing frame {} for {}'.format(frame + 1, movie_image.name))        
         
         context.window.cursor_set('DEFAULT')
+        viewer_space.image = None
         if previousAreaType is not None:
             viewer_area.type = previousAreaType
             
