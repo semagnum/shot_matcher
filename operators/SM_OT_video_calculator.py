@@ -41,10 +41,7 @@ class SM_OT_video_calculator(bpy.types.Operator):
             if space.type == 'IMAGE_EDITOR':
                 viewer_space = space
         
-        if movie_clip.name in bpy.data.images:
-            movie_image = bpy.data.images[movie_clip.name]
-        else:
-            movie_image = bpy.data.images.load(movie_clip.filepath)
+        movie_image = bpy.data.images.load(movie_clip.filepath)
         viewer_space.image = movie_image
 
         #the frame_offset property starts at 0 index, so first frame is actually 0
@@ -62,6 +59,6 @@ class SM_OT_video_calculator(bpy.types.Operator):
         if previousAreaType is not None:
             viewer_area.type = previousAreaType
             
-        movie_image.user_clear()
+        bpy.data.images.remove(movie_image)
         
         return {'FINISHED'}
