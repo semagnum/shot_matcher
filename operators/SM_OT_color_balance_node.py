@@ -1,5 +1,5 @@
 import bpy
-from ..utils import validMaxMinRGB, colorDivision, truncate_name
+from ..utils import validMaxMinRGB, colorDivision, truncate_name, get_bg_name, get_fg_name
 
 class SM_OT_color_balance_node(bpy.types.Operator):
     bl_idname = 'shot_matcher.color_balance_node'
@@ -10,7 +10,7 @@ class SM_OT_color_balance_node(bpy.types.Operator):
     def execute(self, context):
         bg_layer = context.scene.sm_background
         fg_layer = context.scene.sm_foreground
-        node_name = 'CB: ' + truncate_name(fg_layer.layer_name, 12) + ' -> ' + truncate_name(bg_layer.layer_name, 12)
+        node_name = 'CB: ' + truncate_name(self.get_fg_name(), 12) + ' -> ' + truncate_name(self.get_bg_name(), 12)
         context.scene.use_nodes = True
       
         if validMaxMinRGB(context) is False:

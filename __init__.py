@@ -21,7 +21,7 @@ import bpy
 from . import auto_load
 from .LayerSettings import LayerSettings
 from .LayerDict import LayerDict
-from .utils import update_layer_link, type_update
+from .utils import type_update, get_bg_name, get_fg_name, set_bg_name, set_fg_name
 
 auto_load.init()
 
@@ -30,15 +30,15 @@ def register():
     scene = bpy.types.Scene
     scene.sm_settings_movieclips = bpy.props.CollectionProperty(type=LayerDict)
     scene.sm_settings_images = bpy.props.CollectionProperty(type=LayerDict)
-    scene.sm_fg_type: bpy.props.EnumProperty(
+    scene.sm_fg_type = bpy.props.EnumProperty(
         name='Layer Type',
         description='Select which file type the foreground layer is',
         items=[ ('video', 'Video','', 'FILE_MOVIE', 1),
                 ('image', 'Image','', 'FILE_IMAGE', 2),
-               ]
+               ],
         update=type_update
         )
-    scene.sm_bg_type: bpy.props.EnumProperty(
+    scene.sm_bg_type = bpy.props.EnumProperty(
         name='Layer Type',
         description='Select which file type the background layer is',
         items=[ ('video', 'Video','', 'FILE_MOVIE', 1),
@@ -55,10 +55,10 @@ def register():
         )
     scene.sm_background = bpy.props.PointerProperty(type=LayerSettings)
     scene.sm_foreground = bpy.props.PointerProperty(type=LayerSettings)
-    scene.sm_bg_name = bpy.props.StringProperty(update=update_layer_link)
-    scene.sm_fg_name = bpy.props.StringProperty(update=update_layer_link)
+    scene.sm_bg_name = bpy.props.StringProperty(default='', get=get_bg_name, set=set_bg_name)
+    scene.sm_fg_name = bpy.props.StringProperty(default='', get=get_fg_name, set=set_fg_name)
 
 def unregister():
     auto_load.unregister()
     scene = bpy.types.Scene
-    del  scene.sm_settings_movieclips, scene.sm_settings_images, scene.sm_bg_type, scene.sm_fg_type, scene.sm_background, scene.sm_foreground, scene.layer_context
+    del scene.sm_settings_movieclips, scene.sm_settings_images, scene.sm_bg_type, scene.sm_fg_type, scene.sm_background, scene.sm_foreground, scene.layer_context

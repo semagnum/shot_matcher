@@ -3,4 +3,4 @@ from .LayerSettings import LayerSettings
 
 class LayerDict(bpy.types.PropertyGroup):
     name: bpy.props.StringProperty(name="Filename", default="Unknown")
-    setting: LayerSettings
+    setting: bpy.props.PointerProperty(type=LayerSettings)

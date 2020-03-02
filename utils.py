@@ -1,5 +1,6 @@
 import bpy
 import numpy as np
+from .LayerSettings import LayerSettings, copy_settings
 
 def get_layer_settings(context):
     if context.scene.layer_context == 'bg':
@@ -16,23 +17,65 @@ def get_layer_name(context):
         return context.scene.sm_bg_name
     return context.scene.sm_fg_name
 
-def update_layer_link(self, context):
-    layer_name = get_layer_name(context)
-    if layer_name == '':
-        return 
-    layer = get_layer_settings(context)
-    layer_type = get_layer_type(context)
+def get_bg_name(self):
+    return self.get('sm_bg_name', '')
+
+def get_fg_name(self):
+    return self.get('sm_fg_name', '')
+
+def set_bg_name(self, value):
+    if value == '':
+        self['sm_bg_name'] = value
+        return
     
-    if layer_type == 'video':
-        layer_dict = context.scene.sm_settings_movieclips
+    if self.sm_bg_type == 'video':
+        layer_dict = self.sm_settings_movieclips
     else:
-        layer_dict = context.scene.sm_settings_images
-    index = layer_dict.find(layer_name)
-     if index == -1:
+        layer_dict = self.sm_settings_images
+
+    new_index = layer_dict.find(value)
+    if new_index == -1:
         new_layer = layer_dict.add()
-        layer = new_layer
+        new_layer.name = value
+        new_index = layer_dict.find(value)
+    
+    current_index = layer_dict.find(self.sm_bg_name)
+    if self.sm_bg_name != '':
+        if current_index != -1:
+            current_layer = layer_dict.add()
+            current_layer.name = self.sm_bg_name
+            current_index = layer_dict.find(self.sm_bg_name)
+        copy_settings(self.sm_background, layer_dict[current_index].setting)
+    copy_settings(layer_dict[new_index].setting, self.sm_background)
+
+    self['sm_bg_name'] = value
+
+def set_fg_name(self, value):
+    if value == '':
+        self['sm_fg_name'] = value
+        return
+    
+    if self.sm_fg_type == 'video':
+        layer_dict = self.sm_settings_movieclips
     else:
-        layer = layer_dict[index]
+        layer_dict = self.sm_settings_images
+
+    new_index = layer_dict.find(value)
+    if new_index == -1:
+        new_layer = layer_dict.add()
+        new_layer.name = value
+        new_index = layer_dict.find(value)
+    
+    current_index = layer_dict.find(self.sm_fg_name)
+    if self.sm_fg_name != '':
+        if current_index != -1:
+            current_layer = layer_dict.add()
+            current_layer.name = self.sm_fg_name
+            current_index = layer_dict.find(self.sm_fg_name)
+        copy_settings(self.sm_foreground, layer_dict[current_index].setting)
+    copy_settings(layer_dict[new_index].setting, self.sm_foreground)
+
+    self['sm_fg_name'] = value
 
 def type_update(self, context):
     layer_name = get_layer_name(context)
