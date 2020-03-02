@@ -6,6 +6,38 @@ def get_layer_settings(context):
         return context.scene.sm_background
     return context.scene.sm_foreground
 
+def get_layer_type(context):
+    if context.scene.layer_context == 'bg':
+        return context.scene.sm_bg_type
+    return context.scene.sm_fg_type
+
+def get_layer_name(context):
+    if context.scene.layer_context == 'bg':
+        return context.scene.sm_bg_name
+    return context.scene.sm_fg_name
+
+def update_layer_link(self, context):
+    layer_name = get_layer_name(context)
+    if layer_name == '':
+        return 
+    layer = get_layer_settings(context)
+    layer_type = get_layer_type(context)
+    
+    if layer_type == 'video':
+        layer_dict = context.scene.sm_settings_movieclips
+    else:
+        layer_dict = context.scene.sm_settings_images
+    index = layer_dict.find(layer_name)
+     if index == -1:
+        new_layer = layer_dict.add()
+        layer = new_layer
+    else:
+        layer = layer_dict[index]
+
+def type_update(self, context):
+    layer_name = get_layer_name(context)
+    layer_name = ''
+
 def truncate_name(name, limit):
     return (name[:(limit - 3)] + '...') if len(name) > limit else name
 
