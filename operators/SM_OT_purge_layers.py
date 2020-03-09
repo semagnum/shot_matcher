@@ -9,18 +9,19 @@ class SM_OT_purge_layers(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
-        def purge_layer(settings_list):
+        def purge_layer(settings_list, data_list):
             index = 0
-            count = 0
+            nameList = []
             while index < len(settings_list):
-                layer = settings_list[index]
-                if (layer.settings.layer_type == 'image' and layer.name in bpy.data.images) or (layer.settings.layer_type == 'video' and layer.name in bpy.data.movieclips):
+                if settings_list[index].name not in data_list:
+                    nameList.append(settings_list[index].name)
                     settings_list.remove(index)
-                    count += 1
                 else:
                     index +=1
-            return count
-        num_removed = purge_layer(context.scene.sm_settings_movieclips)
-        num_removed += purge_layer(context.scene.sm_settings_images)
-        self.report({'INFO'}, '{} settings have been removed'.format(num_removed))
+            return nameList
+        names_removed = purge_layer(context.scene.sm_settings_movieclips, bpy.data.movieclips)
+        names_removed = names_removed + purge_layer(context.scene.sm_settings_images, bpy.data.images)
+        self.report({'INFO'}, '{} layer settings have been removed for the following images and movie clips:'.format(len(names_removed)))
+        for name in names_removed:
+            self.report({'INFO'}, name)
         return {'FINISHED'}

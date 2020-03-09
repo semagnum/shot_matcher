@@ -8,7 +8,12 @@ from ..operators.SM_OT_image_calculator import SM_OT_image_calculator
 from ..operators.SM_OT_video_calculator import SM_OT_video_calculator
 from ..operators.SM_OT_set_selected import SM_OT_set_selected
 
-from ..utils import get_layer_settings, get_layer_type
+from ..utils import get_layer_settings
+
+def get_layer_type(context):
+    if context.scene.layer_context == 'bg':
+        return context.scene.sm_bg_type
+    return context.scene.sm_fg_type
 
 def get_layer_type_string(context):
     if context.scene.layer_context == 'bg':

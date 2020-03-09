@@ -7,11 +7,6 @@ def get_layer_settings(context):
         return context.scene.sm_background
     return context.scene.sm_foreground
 
-def get_layer_type(context):
-    if context.scene.layer_context == 'bg':
-        return context.scene.sm_bg_type
-    return context.scene.sm_fg_type
-
 def get_layer_name(context):
     if context.scene.layer_context == 'bg':
         return context.scene.sm_bg_name
@@ -23,59 +18,40 @@ def get_bg_name(self):
 def get_fg_name(self):
     return self.get('sm_fg_name', '')
 
-def set_bg_name(self, value):
-    if value == '':
-        self['sm_bg_name'] = value
+def set_layer_name(itself, layer_name, old_value, new_value, sm_layer, sm_layer_type):
+    if new_value == '':
+        itself[layer_name] = new_value
         return
     
-    if self.sm_bg_type == 'video':
-        layer_dict = self.sm_settings_movieclips
+    if sm_layer_type == 'video':
+        layer_dict = itself.sm_settings_movieclips
     else:
-        layer_dict = self.sm_settings_images
-
-    new_index = layer_dict.find(value)
+        layer_dict = itself.sm_settings_images
+    
+    current_index = layer_dict.find(old_value)
+    if old_value != '':
+        if current_index == -1:
+            current_layer = layer_dict.add()
+            current_layer.name = old_value
+            copy_settings(sm_layer, current_layer.setting)
+        else:
+            copy_settings(sm_layer, layer_dict[current_index].setting)
+   
+    new_index = layer_dict.find(new_value)
     if new_index == -1:
         new_layer = layer_dict.add()
-        new_layer.name = value
-        new_index = layer_dict.find(value)
-    
-    current_index = layer_dict.find(self.sm_bg_name)
-    if self.sm_bg_name != '':
-        if current_index != -1:
-            current_layer = layer_dict.add()
-            current_layer.name = self.sm_bg_name
-            current_index = layer_dict.find(self.sm_bg_name)
-        copy_settings(self.sm_background, layer_dict[current_index].setting)
-    copy_settings(layer_dict[new_index].setting, self.sm_background)
+        new_layer.name = new_value
+        copy_settings(new_layer.setting, sm_layer)
+    else:
+        copy_settings(layer_dict[new_index].setting, sm_layer)
 
-    self['sm_bg_name'] = value
+    itself[layer_name] = new_value
+
+def set_bg_name(self, value):
+    set_layer_name(self, 'sm_bg_name', self.sm_bg_name, value, self.sm_background, self.sm_bg_type)
 
 def set_fg_name(self, value):
-    if value == '':
-        self['sm_fg_name'] = value
-        return
-    
-    if self.sm_fg_type == 'video':
-        layer_dict = self.sm_settings_movieclips
-    else:
-        layer_dict = self.sm_settings_images
-
-    new_index = layer_dict.find(value)
-    if new_index == -1:
-        new_layer = layer_dict.add()
-        new_layer.name = value
-        new_index = layer_dict.find(value)
-    
-    current_index = layer_dict.find(self.sm_fg_name)
-    if self.sm_fg_name != '':
-        if current_index != -1:
-            current_layer = layer_dict.add()
-            current_layer.name = self.sm_fg_name
-            current_index = layer_dict.find(self.sm_fg_name)
-        copy_settings(self.sm_foreground, layer_dict[current_index].setting)
-    copy_settings(layer_dict[new_index].setting, self.sm_foreground)
-
-    self['sm_fg_name'] = value
+    set_layer_name(self, 'sm_fg_name', self.sm_fg_name, value, sm_foreground, self.sm_fg_type)
 
 def type_update(self, context):
     layer_name = get_layer_name(context)
@@ -134,44 +110,3 @@ def validMaxMinRGB(context):
 
 def colorDivision(color1, color2):
    return (color1[0] / color2[0], color1[1] / color2[1], color1[2] / color2[2])
-
-def create_sm_ao_node(context, node_group_name):
-    # create a group
-    image_merge_group = bpy.data.node_groups.get(node_group_name)
-    
-    if image_merge_group is None:
-        image_merge_group = bpy.data.node_groups.new(type='CompositorNodeTree', name=node_group_name)
-        # create group inputs
-        image_merge_group.inputs.new('NodeSocketColor','Background')
-        image_merge_group.inputs.new('NodeSocketColor','Foreground')
-        group_inputs = image_merge_group.nodes.new('NodeGroupInput')
-        group_inputs.location = (-250,0)
-        # create group outputs
-        image_merge_group.outputs.new('NodeSocketColor','Image')
-        group_outputs = image_merge_group.nodes.new('NodeGroupOutput')
-        group_outputs.location = (900,0)        
-        #create color balance node
-        color_node = image_merge_group.nodes.new(type='CompositorNodeColorBalance')              
-        color_node.correction_method = 'OFFSET_POWER_SLOPE'      
-        #create alpha over node      
-        alpha_over_node = image_merge_group.nodes.new(type='CompositorNodeAlphaOver')
-        alpha_over_node.location = 600, 200
-        alpha_over_node.use_premultiply = True               
-        #bring it all together
-        image_merge_group.links.new(color_node.outputs[0], alpha_over_node.inputs[2])
-        image_merge_group.links.new(group_inputs.outputs['Background'], alpha_over_node.inputs[1])
-        image_merge_group.links.new(group_inputs.outputs['Foreground'], color_node.inputs[1])
-        image_merge_group.links.new(alpha_over_node.outputs[0], group_outputs.inputs['Image'])
-
-    color_node = image_merge_group.nodes.get('Color Balance')
-    bg_layer = context.scene.sm_background
-    fg_layer = context.scene.sm_foreground
-    bg_slope = bg_layer.max_color - bg_layer.min_color
-    fg_slope = fg_layer.max_color - fg_layer.min_color
-    try:
-        color_node.slope = colorDivision(bg_slope, fg_slope)
-    except:
-        raise ZeroDivisionError('Failed: division by zero ([foreground white color] - [foreground black color] must not equal zero!)')
-    color_node.offset = bg_layer.min_color - fg_layer.min_color
-        
-    return image_merge_group
