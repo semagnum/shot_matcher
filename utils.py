@@ -51,7 +51,7 @@ def set_bg_name(self, value):
     set_layer_name(self, 'sm_bg_name', self.sm_bg_name, value, self.sm_background, self.sm_bg_type)
 
 def set_fg_name(self, value):
-    set_layer_name(self, 'sm_fg_name', self.sm_fg_name, value, sm_foreground, self.sm_fg_type)
+    set_layer_name(self, 'sm_fg_name', self.sm_fg_name, value, self.sm_foreground, self.sm_fg_type)
 
 def type_update(self, context):
     layer_name = get_layer_name(context)
