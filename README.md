@@ -32,3 +32,17 @@ Adds a color balance node to your compositor, mapping the black and white values
 
 ### Alpha Over Node
 Adds a color matching node group to your compositor, mapping the black and white values from the foreground to the background. This is for merging the layers into one image.
+
+# How to Use
+
+1. Select your background and foreground layers.  The background is the image or video that will be "behind" the foreground layer in your final composition.  It's also the layer that the foreground's color range will be mapped to.  You can select the image or movie clip from the textbox or the "Use Current Image/Clip" button to get the file you are currently viewing.
+2. For the background layer, analyze and get the colors representing black and white in the image. Use pixels of the picture/video that represent black or white colors for reference, preferably in the area that your foreground layer will be composited to.
+    * For images, you can use either the auto calculator or the color picker.  For the calculator, simply press the button and let it pick the max and min RGB values in the image.  It can get close, but usually the color picker is best.  To use the color picker, first click "Reset Colors" in the Shot Matcher panel.  Click "Color Pick" and find the pixels meant to represent the colors white and black.  Hover over the area, hold down Ctrl, and move the cursor to pick up the colors. You should see the white and black colors in the panel update as you do so. You simply click the left or right mouse button to accept your changes, or press "Escape" to cancel. Feel free to do it again and again to update the current white and black colors you have, or you can restart with "Reset Colors."
+    * For movie clips, only the auto calculator is available.  There's three parameters: start frame, end frame, and frame step.  Whenever you run the analysis, the addon will iterate from "start frame" to "end frame," using the "frame step" as the increment value. For example, if the parameters above were (1, 250, 10), the addon will look at frames 1, 11, 21,...231, and 241.
+    * Note: if you insist to color pick a movie clip, simply load the movie clip into Blender as an image.  On the side panel, you can change the current frame to your liking.
+3. Repeat the previous step for the foreground layer.
+4. Once you've gotten the values for each layer, select one of the node groups to generate.  The "alpha over" is for typical compositing, while the color balance one is helpful for shot matching.
+5. If you need to update the colors, just adjust them and click the node button again, and it'll simply update the existing node or group instead of recreating it!  It's based on the node label or group name, so if you change those, the addon will create a new one instead of updating.
+
+# Auto-saving and Purging Settings
+Just for your information, the layer settings are saved for each image and movie clip you use.  The layers are saved whenever you change layers in the Shot Matcher panel (done by selecting a different image or movie in the dropdown), as well as when you save your Blender project.  Upon loading your Blender project, the addon will check if each layer setting can find the correlating image or movie clip.  If no matching image or movie clip can be found, the setting will be removed to save space.
