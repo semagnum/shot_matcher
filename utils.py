@@ -1,6 +1,5 @@
 import bpy
 import numpy as np
-from .LayerSettings import LayerSettings
 
 def copy_settings(first_layer, second_layer):
     second_layer.max_color = first_layer.max_color
