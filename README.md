@@ -43,3 +43,6 @@ Adds a color matching node group to your compositor, mapping the black and white
 3. Repeat the previous step for the foreground layer.
 4. Once you've gotten the values for each layer, select one of the node groups to generate.  The "alpha over" is for typical compositing, while the color balance one is helpful for shot matching.
 5. If you need to update the colors, just adjust them and click the node button again, and it'll simply update the existing node or group instead of recreating it!  It's based on the node label or group name, so if you change those, the addon will create a new one instead of updating.
+
+# Auto-saving and Purging Settings
+Just for your information, the layer settings are saved for each image and movie clip you use.  The layers are saved whenever you change layers in the Shot Matcher panel (done by selecting a different image or movie in the dropdown), as well as when you save your Blender project.  Upon loading your Blender project, the addon will check if each layer setting can find the correlating image or movie clip.  If no matching image or movie clip can be found, the setting will be removed to save space.
