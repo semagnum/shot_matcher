@@ -21,13 +21,13 @@ import bpy
 from . import auto_load
 from .LayerSettings import LayerSettings
 from .LayerDict import LayerDict
-from .utils import type_update, get_bg_name, get_fg_name, set_bg_name, set_fg_name
+from .utils import type_update, get_bg_name, get_fg_name, set_bg_name, set_fg_name, copy_settings
 from bpy.app.handlers import persistent
 
 auto_load.init()
 
 @persistent
-def save_pre_layer_settings(scene):
+def save_pre_layer_settings(dummy):
     def save_layer(scene, layer_name, sm_layer, sm_layer_type):
         if layer_name == '':
             return
@@ -39,12 +39,12 @@ def save_pre_layer_settings(scene):
         
         current_index = layer_dict.find(layer_name)
         copy_settings(sm_layer, layer_dict[current_index].setting)
-
-    save_layer(scene, scene.sm_bg_name, scene.sm_background, scene.sm_bg_type)
-    save_layer(scene, scene.sm_fg_name, scene.sm_foreground, scene.sm_fg_type)
+    for scene in bpy.data.scenes:
+    	save_layer(scene, scene.sm_bg_name, scene.sm_background, scene.sm_bg_type)
+    	save_layer(scene, scene.sm_fg_name, scene.sm_foreground, scene.sm_fg_type)
 
 @persistent
-def load_post_purge_settings(scene):
+def load_post_purge_settings(dummy):
     def purge_layer(settings_list, data_list, print_type):
         index = 0
         nameList = []
@@ -58,8 +58,9 @@ def load_post_purge_settings(scene):
             print('{} layer settings have been removed for the following {}:'.format(len(nameList), print_type))
             for name in nameList:
                 print('\t{}'.format(name))
-    purge_layer(scene.sm_settings_movieclips, bpy.data.movieclips, 'movieclips')
-    purge_layer(scene.sm_settings_images, bpy.data.images, 'images')
+    for scene in bpy.data.scenes:
+    	purge_layer(scene.sm_settings_movieclips, bpy.data.movieclips, 'movieclips')
+    	purge_layer(scene.sm_settings_images, bpy.data.images, 'images')
 
 def register():
     auto_load.register()

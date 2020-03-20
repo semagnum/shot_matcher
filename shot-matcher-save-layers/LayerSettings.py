@@ -1,14 +1,5 @@
 import bpy
 
-def copy_settings(first_layer, second_layer):
-    second_layer.max_color = first_layer.max_color
-    second_layer.min_color = first_layer.min_color
-    second_layer.use_alpha_threshold = first_layer.use_alpha_threshold
-    second_layer.alpha_threshold = first_layer.alpha_threshold
-    second_layer.start_frame = first_layer.start_frame
-    second_layer.end_frame = first_layer.end_frame
-    second_layer.frame_step = first_layer.frame_step
-
 class LayerSettings(bpy.types.PropertyGroup):
     
     max_color: bpy.props.FloatVectorProperty(
