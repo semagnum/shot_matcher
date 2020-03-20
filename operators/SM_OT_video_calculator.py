@@ -1,5 +1,5 @@
 import bpy
-from ..utils import frame_analyze, get_layer_settings, get_layer_name
+from ..utils import frame_analyze, get_layer_settings
 from ..LayerSettings import LayerSettings
 
 class SM_OT_video_calculator(bpy.types.Operator):
@@ -10,11 +10,11 @@ class SM_OT_video_calculator(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return get_layer_name(context) in bpy.data.movieclips
+        return get_layer_settings(context).layer_name in bpy.data.movieclips
     
     def execute(self, context):
         context_layer = get_layer_settings(context)
-        movie_clip = bpy.data.movieclips[get_layer_name(context)]
+        movie_clip = bpy.data.movieclips[context_layer.layer_name]
 
         if context_layer.start_frame < movie_clip.frame_start or context_layer.end_frame > movie_clip.frame_duration or context_layer.start_frame > context_layer.end_frame:
             self.report({'ERROR'}, 'Invalid frame range: it must be within the frame range of the video clip')
