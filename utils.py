@@ -62,8 +62,10 @@ def set_fg_name(self, value):
     set_layer_name(self, 'sm_fg_name', self.sm_fg_name, value, self.sm_foreground, self.sm_fg_type)
 
 def type_update(self, context):
-    layer_name = get_layer_name(context)
-    layer_name = ''
+    if context.scene.layer_context == 'bg':
+        context.scene.sm_bg_name = ''
+    else:
+        context.scene.sm_fg_name = ''
 
 def truncate_name(name, limit):
     return (name[:(limit - 3)] + '...') if len(name) > limit else name
