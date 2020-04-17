@@ -44,15 +44,15 @@ def draw_layer(itself, context, sm_layer, sm_layer_type):
     if sm_layer.use_alpha_threshold:
         box.prop(sm_layer, 'alpha_threshold', slider = True)
     
-    box.row().prop(sm_layer, 'max_color', text='White Color')
-    box.row().prop(sm_layer, 'min_color', text='Black Color')   
+    box.row().prop(sm_layer, 'max_color', text='White')
+    box.row().prop(sm_layer, 'mid_color', text='Midtone')
+    box.row().prop(sm_layer, 'min_color', text='Black') 
     
     col = box.column(align=True)
     if sm_layer_type == 'image':
         if itself.bl_space_type == 'IMAGE_EDITOR':
-            row = col.row(align=True)
-            row.operator(SM_OT_color_picker.bl_idname, text='Color Pick', icon='EYEDROPPER')
-            row.operator(SM_OT_color_reset.bl_idname, text='Reset Colors', icon='IMAGE_ALPHA')
+            col.operator(SM_OT_color_picker.bl_idname, text='Color Pick White and Black', icon='EYEDROPPER')
+            col.operator(SM_OT_color_reset.bl_idname, text='Reset Color Picker', icon='IMAGE_ALPHA')
         box.operator(SM_OT_image_calculator.bl_idname, text='Auto Calculate Colors', icon='SEQ_HISTOGRAM')
     else:
         col.prop(sm_layer, 'start_frame', text='Start Frame')

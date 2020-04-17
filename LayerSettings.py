@@ -8,6 +8,14 @@ class LayerSettings(bpy.types.PropertyGroup):
         min=0.0,
         precision=4,
         subtype='COLOR')
+
+    mid_color: bpy.props.FloatVectorProperty(
+        description='The color representing the midtone value of this layer',
+        default=(0.5, 0.5, 0.5),
+        min=0.0,
+        precision=4,
+        subtype='COLOR')
+
     min_color: bpy.props.FloatVectorProperty(
         description='The color representing the black value of this layer',
         default=(0.0, 0.0, 0.0),

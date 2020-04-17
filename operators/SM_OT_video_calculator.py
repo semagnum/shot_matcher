@@ -1,5 +1,6 @@
 import bpy
-from ..utils import frame_analyze, get_layer_settings, get_layer_name
+from ..utils import get_layer_settings, get_layer_name
+from .op_utils import frame_analyze
 
 class SM_OT_video_calculator(bpy.types.Operator):
     bl_idname = 'shot_matcher.video_calculator'
@@ -45,13 +46,18 @@ class SM_OT_video_calculator(bpy.types.Operator):
 
         #the frame_offset property starts at 0 index, so first frame is actually 0
         frame = context_layer.start_frame - 1
+        frame_count = 0
+        midtone_sum = 0
         for frame in range(frame, context_layer.end_frame, context_layer.frame_step):  
             viewer_space.image_user.frame_offset = frame
             #switch back and forth to force refresh
             viewer_space.display_channels = 'COLOR'
             viewer_space.display_channels = 'COLOR_ALPHA'
-            frame_analyze(context, movie_image, (frame == context_layer.start_frame - 1))
+            midtone_sum += frame_analyze(context, movie_image, (frame == context_layer.start_frame - 1))
+            frame_count += 1
             self.report({'INFO'}, 'Shot Matcher: Analyzing frame {} for {}'.format(frame + 1, movie_image.name))
+        # overwrite midtone color with average of all midtones 
+        context_layer.mid_color = midtone_sum / frame_count
         
         context.window.cursor_set('DEFAULT')
         viewer_space.image = None

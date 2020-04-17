@@ -1,5 +1,6 @@
 import bpy
-from ..utils import validMaxMinRGB, colorDivision, truncate_name, get_bg_name, get_fg_name
+from ..utils import get_bg_name, get_fg_name
+from .op_utils import validMaxMinRGB, colorDivision, truncate_name, offset_power_slope
 
 class SM_OT_color_balance_node(bpy.types.Operator):
     bl_idname = 'shot_matcher.color_balance_node'
@@ -8,8 +9,6 @@ class SM_OT_color_balance_node(bpy.types.Operator):
     bl_options = {'REGISTER'}
     
     def execute(self, context):
-        bg_layer = context.scene.sm_background
-        fg_layer = context.scene.sm_foreground
         node_name = 'CB: ' + truncate_name(context.scene.sm_fg_name, 12) + ' -> ' + truncate_name(context.scene.sm_bg_name, 12)
         context.scene.use_nodes = True
       
@@ -26,13 +25,14 @@ class SM_OT_color_balance_node(bpy.types.Operator):
             cb_node.correction_method = 'OFFSET_POWER_SLOPE'
             cb_node.label = node_name
 
-        bg_slope = bg_layer.max_color - bg_layer.min_color
-        fg_slope = fg_layer.max_color - fg_layer.min_color
         try:
-            cb_node.slope = colorDivision(bg_slope, fg_slope)
-        except:
-            self.report({'ERROR'}, 'Failed: division by zero ([foreground white color] - [foreground black color] must not equal zero!)')
+            basis, offset, power, slope = offset_power_slope(context)
+            cb_node.slope = slope
+            cb_node.offset = offset
+            cb_node.power = power
+            cb_node.offset_basis = basis
+        except ZeroDivisionError:
+            self.report({'ERROR'}, 'Failed: division by zero ([white color] - [black color] must not equal zero!)')
             return {'FINISHED'}
-        cb_node.offset = bg_layer.min_color - fg_layer.min_color
                 
         return {'FINISHED'}

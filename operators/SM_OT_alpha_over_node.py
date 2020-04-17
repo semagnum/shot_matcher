@@ -1,5 +1,5 @@
 import bpy
-from ..utils import validMaxMinRGB, truncate_name, colorDivision
+from .op_utils import truncate_name, colorDivision, validMaxMinRGB, offset_power_slope
 
 class SM_OT_alpha_over_node(bpy.types.Operator):
     bl_idname = 'shot_matcher.alpha_over_node'
@@ -36,15 +36,14 @@ class SM_OT_alpha_over_node(bpy.types.Operator):
             image_merge_group.links.new(alpha_over_node.outputs[0], group_outputs.inputs['Image'])
 
         color_node = image_merge_group.nodes.get('Color Balance')
-        bg_layer = context.scene.sm_background
-        fg_layer = context.scene.sm_foreground
-        bg_slope = bg_layer.max_color - bg_layer.min_color
-        fg_slope = fg_layer.max_color - fg_layer.min_color
         try:
-            color_node.slope = colorDivision(bg_slope, fg_slope)
-        except:
-            raise ZeroDivisionError('Failed: division by zero ([foreground white color] - [foreground black color] must not equal zero!)')
-        color_node.offset = bg_layer.min_color - fg_layer.min_color
+            basis, offset, power, slope = offset_power_slope(context)
+            color_node.slope = slope
+            color_node.offset = offset
+            color_node.power = power
+            color_node.offset_basis = basis
+        except ZeroDivisionError:
+            raise ZeroDivisionError('Failed: division by zero ([white color] - [black color] must not equal zero!)')
             
         return image_merge_group
     

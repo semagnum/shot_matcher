@@ -1,8 +1,8 @@
 import bpy
-import numpy as np
 
 def copy_settings(first_layer, second_layer):
     second_layer.max_color = first_layer.max_color
+    second_layer.mid_color = first_layer.mid_color
     second_layer.min_color = first_layer.min_color
     second_layer.use_alpha_threshold = first_layer.use_alpha_threshold
     second_layer.alpha_threshold = first_layer.alpha_threshold
@@ -66,57 +66,3 @@ def type_update(self, context):
         context.scene.sm_bg_name = ''
     else:
         context.scene.sm_fg_name = ''
-
-def truncate_name(name, limit):
-    return (name[:(limit - 3)] + '...') if len(name) > limit else name
-
-def frame_analyze(context, image, forceOverwrite):  
-    layer = get_layer_settings(context)        
-    pixels = np.array(image.pixels)
-    
-    #slice the pixels into the RGB channels
-    ch_r = pixels[0::4]    
-    ch_g = pixels[1::4]
-    ch_b = pixels[2::4]
-    if layer.use_alpha_threshold:
-        ch_a = pixels[3::4]
-        ch_r = ch_r[(ch_a >= layer.alpha_threshold)]
-        ch_g = ch_g[(ch_a >= layer.alpha_threshold)]
-        ch_b = ch_b[(ch_a >= layer.alpha_threshold)]
-    
-    max_r = ch_r.max()
-    max_g = ch_g.max()
-    max_b = ch_b.max()
-    min_r = ch_r.min()
-    min_g = ch_g.min()
-    min_b = ch_b.min()
-
-    if forceOverwrite is True:
-        layer.max_color = (max_r, max_g, max_b)
-        layer.min_color = (min_r, min_g, min_b)
-        return True
-
-    #we only want to overwrite if the value supersedes the current one
-    maxNewV = max(max_r, max_g, max_b)
-    maxCurrentV = max(layer.max_color)
-
-    if maxNewV > maxCurrentV:
-        layer.max_color = (max_r, max_g, max_b)
-
-    minNewV = max(min_r, min_g, min_b)
-    minCurrentV = max(layer.min_color)
-    if minNewV < minCurrentV:
-        layer.min_color = (min_r, min_g, min_b)
-    
-    return True
-
-def validMaxMinRGB(context):
-    def validLayerMaxMin(context, layer):
-        minV = max(layer.min_color)
-        maxV = max(layer.max_color)
-        return minV <= maxV
-    
-    return validLayerMaxMin(context, context.scene.sm_background) and validLayerMaxMin(context, context.scene.sm_foreground)
-
-def colorDivision(color1, color2):
-   return (color1[0] / color2[0], color1[1] / color2[1], color1[2] / color2[2])

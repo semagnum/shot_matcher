@@ -1,5 +1,6 @@
 import bpy
-from ..utils import frame_analyze, get_layer_name
+from ..utils import get_layer_name
+from .op_utils import frame_analyze
 
 class SM_OT_image_calculator(bpy.types.Operator):
     bl_idname = 'shot_matcher.image_calculator'
