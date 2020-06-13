@@ -36,7 +36,7 @@ def frame_analyze(context, image, forceOverwrite):
         layer.max_color = (max_r, max_g, max_b)
         layer.mid_color = (mid_r, mid_g, mid_b)
         layer.min_color = (min_r, min_g, min_b)
-        return layer.mid_color
+        return (mid_r, mid_g, mid_b)
 
     #we only want to overwrite if the value supersedes the current one
     maxNewV = max(max_r, max_g, max_b)
@@ -50,7 +50,7 @@ def frame_analyze(context, image, forceOverwrite):
     if minNewV < minCurrentV:
         layer.min_color = (min_r, min_g, min_b)
     
-    return layer.mid_color
+    return (mid_r, mid_g, mid_b)
 
 def validMaxMinRGB(context):
     def validLayerMaxMin(context, layer):
