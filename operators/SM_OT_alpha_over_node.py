@@ -74,7 +74,7 @@ class SM_OT_alpha_over_node(bpy.types.Operator):
             group_node.name = node_group_name
             #add the background texture as an input, just for quicker debugging
             if bg_name != '':
-                if bg_layer.layer_type == 'video':
+                if context.scene.sm_bg_type == 'video':
                     bg_node = tree.nodes.new('CompositorNodeMovieClip')
                     bg_node.clip = bpy.data.movieclips[bg_name]
                 else:
@@ -83,7 +83,7 @@ class SM_OT_alpha_over_node(bpy.types.Operator):
                 bg_node.location = -300, 0
                 tree.links.new(bg_node.outputs[0], group_node.inputs[0])
             if fg_name != '':
-                if fg_layer.layer_type == 'video':
+                if context.scene.sm_fg_type == 'video':
                     fg_node = tree.nodes.new('CompositorNodeMovieClip')
                     fg_node.clip = bpy.data.movieclips[fg_name]
                 else:

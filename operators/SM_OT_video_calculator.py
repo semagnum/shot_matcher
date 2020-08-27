@@ -48,12 +48,13 @@ class SM_OT_video_calculator(bpy.types.Operator):
         frame = context_layer.start_frame - 1
         frame_count = 0
         midtone_sum = (0.0,0.0,0.0)
+        viewer_space.image_user.frame_duration = movie_clip.frame_duration
         for frame in range(frame, context_layer.end_frame, context_layer.frame_step):  
-            viewer_space.image_user.frame_offset = frame
+            viewer_space.image_user.frame_current = frame
             #switch back and forth to force refresh
             viewer_space.display_channels = 'COLOR'
             viewer_space.display_channels = 'COLOR_ALPHA'
-            next_midtone = frame_analyze(context, movie_image, (frame == context_layer.start_frame - 1))
+            next_midtone = frame_analyze(context, viewer_space.image, (frame_count == 0))
             midtone_sum = tuple(x + y for x, y in zip(midtone_sum, next_midtone))
             frame_count += 1
             self.report({'INFO'}, 'Shot Matcher: Analyzing frame {} for {}'.format(frame + 1, movie_image.name))
