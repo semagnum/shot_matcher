@@ -14,7 +14,7 @@ class SM_OT_color_picker(bpy.types.Operator):
     def modal(self, context, event):
         context.window.cursor_set('EYEDROPPER')   
     
-        context.area.header_text_set(text='Ctrl + Mouse: pick white/black colors, LMB/RMB: finish and apply, ESC: cancel')
+        context.area.header_text_set(text='LMB + drag: pick white/black colors, RMB: apply and finish, ESC: cancel')
         context_layer = get_layer_settings(context)
         if event.type == 'LEFTMOUSE': # start or end drag
             self.lmb = (event.value == 'PRESS')
@@ -28,6 +28,7 @@ class SM_OT_color_picker(bpy.types.Operator):
             context_layer.max_color = (self.max_r, self.max_g, self.max_b)
             context.window.cursor_set('DEFAULT')
             context.area.header_text_set(text=None)
+            context.area.tag_redraw()
             return {'FINISHED'}
         elif event.type in {'MIDDLEMOUSE', 'WHEELUPMOUSE', 'WHEELDOWNMOUSE'}: # allow navigation shortcuts
             return {'PASS_THROUGH'}
