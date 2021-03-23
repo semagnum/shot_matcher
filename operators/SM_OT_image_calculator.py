@@ -15,8 +15,8 @@ class SM_OT_image_calculator(bpy.types.Operator):
     
     def execute(self, context):
         context.window.cursor_set('WAIT')
-
-        frame_analyze(context, bpy.data.images[get_layer_name(context)], True)
+        image = bpy.data.images[get_layer_name(context)].pixels
+        frame_analyze(context, image)
         
         context.window.cursor_set('DEFAULT')
         return {'FINISHED'}
