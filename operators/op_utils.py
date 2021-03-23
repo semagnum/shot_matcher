@@ -6,51 +6,23 @@ def truncate_name(name, limit):
     return (name[:(limit - 3)] + '...') if len(name) > limit else name
 
 # returns the midtone color for use by the video analyzer
-def frame_analyze(context, image, forceOverwrite):  
+def frame_analyze(context, image):  
     layer = get_layer_settings(context)        
-    pixels = np.array(image.pixels)
+    pixels = np.array(image).reshape(-1, 4)
     
     #slice the pixels into the RGB channels
-    ch_r = pixels[0::4]    
-    ch_g = pixels[1::4]
-    ch_b = pixels[2::4]
     if layer.use_alpha_threshold:
-        ch_a = pixels[3::4]
-        ch_r = ch_r[(ch_a >= layer.alpha_threshold)]
-        ch_g = ch_g[(ch_a >= layer.alpha_threshold)]
-        ch_b = ch_b[(ch_a >= layer.alpha_threshold)]
+        ch_a = pixels[:, 3]
+        pixels = pixels[(ch_a >= layer.alpha_threshold)]
     
-    max_r = ch_r.max()
-    max_g = ch_g.max()
-    max_b = ch_b.max()
+    pixels = np.delete(pixels, 3, axis=1)
+    img_max = pixels.max(axis=0)
+    img_min = pixels.min(axis=0)
+    img_mid = pixels.mean(axis=0)
 
-    min_r = ch_r.min()
-    min_g = ch_g.min()
-    min_b = ch_b.min()
-
-    mid_r = np.mean(ch_r)
-    mid_g = np.mean(ch_g)
-    mid_b = np.mean(ch_b)
-
-    if forceOverwrite is True:
-        layer.max_color = (max_r, max_g, max_b)
-        layer.mid_color = (mid_r, mid_g, mid_b)
-        layer.min_color = (min_r, min_g, min_b)
-        return (mid_r, mid_g, mid_b)
-
-    #we only want to overwrite if the value supersedes the current one
-    maxNewV = max(max_r, max_g, max_b)
-    maxCurrentV = max(layer.max_color)
-
-    if maxNewV > maxCurrentV:
-        layer.max_color = (max_r, max_g, max_b)
-
-    minNewV = max(min_r, min_g, min_b)
-    minCurrentV = max(layer.min_color)
-    if minNewV < minCurrentV:
-        layer.min_color = (min_r, min_g, min_b)
-    
-    return (mid_r, mid_g, mid_b)
+    layer.max_color = tuple(img_max)
+    layer.mid_color = tuple(img_mid)
+    layer.min_color = tuple(img_min)
 
 def validMaxMinRGB(context):
     def validLayerMaxMin(context, layer):
