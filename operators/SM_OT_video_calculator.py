@@ -32,7 +32,7 @@ class SM_OT_video_calculator(bpy.types.Operator):
         if self.previousAreaType is not None:
             self.viewer_area.type = self.previousAreaType
 
-    def cancelCleanup(self, message, resetUI=False):
+    def cancelCleanup(self, context, message, resetUI=False):
         self.report({'ERROR'}, message)
         context.window.cursor_set('DEFAULT')
         if resetUI:
@@ -52,7 +52,7 @@ class SM_OT_video_calculator(bpy.types.Operator):
         movie_clip = bpy.data.movieclips[get_layer_name(context)]
 
         if context_layer.start_frame < movie_clip.frame_start or context_layer.end_frame > movie_clip.frame_duration or context_layer.start_frame > context_layer.end_frame:
-            return self.cancelCleanup('Invalid frame range: it must be within the frame range of the video clip')
+            return self.cancelCleanup(context=context, message='Invalid frame range: it must be within the frame range of the video clip')
 
         context.window.cursor_set('WAIT')
 
@@ -73,12 +73,12 @@ class SM_OT_video_calculator(bpy.types.Operator):
             try:
                 all_images.append(self.viewer_space.image.pixels)
             except MemoryError:
-                return self.cancelCleanup('Memory overload, analysis failed (lessen the frame range)')
+                return self.cancelCleanup(context=context, message='Memory overload, analysis failed (lessen the frame range)', resetUI=True)
             
         self.resetUI()
         try:
             frame_analyze(context, all_images)
         except MemoryError:
-            return self.cancelCleanup('Memory overload, analysis failed (lessen the frame range)')
+            return self.cancelCleanup(context=context, message='Memory overload, analysis failed (lessen the frame range)')
         
         return {'FINISHED'}

@@ -7,6 +7,7 @@ from ..operators.SM_OT_color_reset import SM_OT_color_reset
 from ..operators.SM_OT_image_calculator import SM_OT_image_calculator
 from ..operators.SM_OT_video_calculator import SM_OT_video_calculator
 from ..operators.SM_OT_set_selected import SM_OT_set_selected
+from ..operators.SM_OT_video_frame_calculator import SM_OT_video_frame_calculator
 
 from ..utils import get_layer_settings
 
@@ -48,17 +49,20 @@ def draw_layer(itself, context, sm_layer, sm_layer_type):
     box.row().prop(sm_layer, 'mid_color', text='Midtone')
     box.row().prop(sm_layer, 'min_color', text='Black') 
     
+    if sm_layer_type == 'video' and itself.bl_space_type == 'CLIP_EDITOR':
+        box.operator(SM_OT_video_frame_calculator.bl_idname, text='Analyze Video Frame', icon='SEQ_HISTOGRAM')
+        
     col = box.column(align=True)
     if sm_layer_type == 'image':
         if itself.bl_space_type == 'IMAGE_EDITOR':
             col.operator(SM_OT_color_picker.bl_idname, text='Color Pick White and Black', icon='EYEDROPPER')
             col.operator(SM_OT_color_reset.bl_idname, text='Reset Color Picker', icon='IMAGE_ALPHA')
-        box.operator(SM_OT_image_calculator.bl_idname, text='Auto Calculate Colors', icon='SEQ_HISTOGRAM')
+        box.operator(SM_OT_image_calculator.bl_idname, text='Analyze Image', icon='SEQ_HISTOGRAM')
     else:
         col.prop(sm_layer, 'start_frame', text='Start Frame')
         col.prop(sm_layer, 'end_frame', text='End Frame')
         col.prop(sm_layer, 'frame_step', text='Frame Step')
-        col.operator(SM_OT_video_calculator.bl_idname, text='Auto Calculate Colors', icon='SEQ_HISTOGRAM')
+        col.operator(SM_OT_video_calculator.bl_idname, text='Analyze Video Range', icon='SEQ_HISTOGRAM')
     
         
 def draw_panel(itself, context):
