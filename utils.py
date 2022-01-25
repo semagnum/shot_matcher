@@ -1,5 +1,3 @@
-import bpy
-
 def copy_settings(first_layer, second_layer):
     second_layer.max_color = first_layer.max_color
     second_layer.mid_color = first_layer.mid_color
@@ -10,32 +8,37 @@ def copy_settings(first_layer, second_layer):
     second_layer.end_frame = first_layer.end_frame
     second_layer.frame_step = first_layer.frame_step
 
+
 def get_layer_settings(context):
     if context.scene.layer_context == 'bg':
         return context.scene.sm_background
     return context.scene.sm_foreground
+
 
 def get_layer_name(context):
     if context.scene.layer_context == 'bg':
         return context.scene.sm_bg_name
     return context.scene.sm_fg_name
 
+
 def get_bg_name(self):
     return self.get('sm_bg_name', '')
 
+
 def get_fg_name(self):
     return self.get('sm_fg_name', '')
+
 
 def set_layer_name(itself, layer_name, old_value, new_value, sm_layer, sm_layer_type):
     if new_value == '':
         itself[layer_name] = new_value
         return
-    
+
     if sm_layer_type == 'video':
         layer_dict = itself.sm_settings_movieclips
     else:
         layer_dict = itself.sm_settings_images
-    
+
     current_index = layer_dict.find(old_value)
     if old_value != '':
         if current_index == -1:
@@ -44,7 +47,7 @@ def set_layer_name(itself, layer_name, old_value, new_value, sm_layer, sm_layer_
             copy_settings(sm_layer, current_layer.setting)
         else:
             copy_settings(sm_layer, layer_dict[current_index].setting)
-   
+
     new_index = layer_dict.find(new_value)
     if new_index == -1:
         new_layer = layer_dict.add()
@@ -55,11 +58,14 @@ def set_layer_name(itself, layer_name, old_value, new_value, sm_layer, sm_layer_
 
     itself[layer_name] = new_value
 
+
 def set_bg_name(self, value):
     set_layer_name(self, 'sm_bg_name', self.sm_bg_name, value, self.sm_background, self.sm_bg_type)
 
+
 def set_fg_name(self, value):
     set_layer_name(self, 'sm_fg_name', self.sm_fg_name, value, self.sm_foreground, self.sm_fg_type)
+
 
 def type_update(self, context):
     if context.scene.layer_context == 'bg':

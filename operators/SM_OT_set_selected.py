@@ -1,5 +1,5 @@
 import bpy
-from ..utils import get_layer_settings
+
 
 class SM_OT_set_selected(bpy.types.Operator):
     bl_idname = 'shot_matcher.set_selected'
@@ -11,8 +11,9 @@ class SM_OT_set_selected(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return (hasattr(context, 'edit_image') and hasattr(context.edit_image, 'name')) or (hasattr(context, 'edit_movieclip') and hasattr(context.edit_movieclip, 'name'))
-    
+        return (hasattr(context, 'edit_image') and hasattr(context.edit_image, 'name')) or (
+                    hasattr(context, 'edit_movieclip') and hasattr(context.edit_movieclip, 'name'))
+
     def execute(self, context):
         if self.space_type == 'IMAGE_EDITOR':
             if context.scene.layer_context == 'bg':

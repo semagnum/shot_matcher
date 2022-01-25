@@ -1,27 +1,29 @@
 import bpy
-from ..utils import get_bg_name, get_fg_name
-from .op_utils import validMaxMinRGB, colorDivision, truncate_name, offset_power_slope
+
+from .op_utils import valid_rgb_range, truncate_name, offset_power_slope
+
 
 class SM_OT_color_balance_node(bpy.types.Operator):
     bl_idname = 'shot_matcher.color_balance_node'
     bl_label = 'Shot Matcher: Color Balance'
-    bl_description = 'Creates a color balance node that maps the max/min values from the foreground to the background layer'
+    bl_description = 'Creates a color balance node that maps max/min values from the foreground to the background layer'
     bl_options = {'REGISTER'}
-    
+
     def execute(self, context):
-        node_name = 'CB: ' + truncate_name(context.scene.sm_fg_name, 12) + ' -> ' + truncate_name(context.scene.sm_bg_name, 12)
+        node_name = 'CB: ' + truncate_name(context.scene.sm_fg_name, 12) + ' -> ' + truncate_name(
+            context.scene.sm_bg_name, 12)
         context.scene.use_nodes = True
-      
-        if validMaxMinRGB(context) is False:
+
+        if valid_rgb_range(context) is False:
             self.report({'ERROR'}, 'The white color is less than or equal to the black color')
             return {'FINISHED'}
-        
+
         tree = context.scene.node_tree
         cb_node = next((node for node in tree.nodes if node.label == node_name), None)
-        
-        if cb_node is None:    
-            #create color balance node
-            cb_node = tree.nodes.new(type='CompositorNodeColorBalance')              
+
+        if cb_node is None:
+            # create color balance node
+            cb_node = tree.nodes.new(type='CompositorNodeColorBalance')
             cb_node.correction_method = 'OFFSET_POWER_SLOPE'
             cb_node.label = node_name
 
@@ -34,5 +36,5 @@ class SM_OT_color_balance_node(bpy.types.Operator):
         except ZeroDivisionError:
             self.report({'ERROR'}, 'Failed: division by zero ([white color] - [black color] must not equal zero!)')
             return {'FINISHED'}
-                
+
         return {'FINISHED'}

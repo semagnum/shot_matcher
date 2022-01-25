@@ -1,6 +1,7 @@
-import bpy, sys
-from ..LayerSettings import LayerSettings
+import bpy
+
 from ..utils import get_layer_settings
+
 
 class SM_OT_color_reset(bpy.types.Operator):
     bl_idname = 'shot_matcher.color_reset'
