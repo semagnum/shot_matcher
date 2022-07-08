@@ -20,7 +20,7 @@ from .panels.SM_PT_video_analyzer import SM_PT_video_analyzer
 bl_info = {
     "name": 'Shot Matcher',
     "author": 'Spencer Magnusson',
-    "version": (3, 4, 3),
+    "version": (3, 4, 4),
     "blender": (2, 83, 0),
     "description": 'Analyzes colors of an image or movie clip and applies it to the compositing tree.',
     "location": 'Image Editor > UI > Shot Matcher & Movie Clip Editor > Tools > Shot Matcher',
@@ -123,11 +123,15 @@ def register():
 
 
 def unregister():
+    for cls in addon_classes[::-1]:
+        bpy.utils.unregister_class(cls)
     scene = bpy.types.Scene
-    del scene.sm_settings_movieclips, scene.sm_settings_images, scene.sm_bg_type, scene.sm_fg_type
-    del scene.sm_background, scene.sm_foreground, scene.layer_context
+
     bpy.app.handlers.save_pre.remove(save_pre_layer_settings)
     bpy.app.handlers.load_post.remove(load_post_purge_settings)
+    
+    del scene.sm_settings_movieclips, scene.sm_settings_images, scene.sm_bg_type, scene.sm_fg_type
+    del scene.sm_background, scene.sm_foreground, scene.layer_context
 
     for cls in model_classes[::-1]:
         bpy.utils.unregister_class(cls)
