@@ -3,6 +3,10 @@
 
 @import "{{ site.theme }}";
 
+.logo {
+    margin-bottom: 20px;
+}
+
 @media print, screen and (min-width: 961px) {
   section {
     padding-bottom: 0;

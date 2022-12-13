@@ -8,6 +8,7 @@ title: Shot Matcher
 email: semagnum+shotmatcher@gmail.com
 description: Official documentation
 github_username: semagnum
+logo: assets/img/shot-matcher-logo.png
 
 # Build settings
 remote_theme: pages-themes/minimal@v0.2.0

@@ -17,7 +17,9 @@
   <body>
     <div class="wrapper">
       <header>
-        <h1><a href="{{ absolute_url }}">{{ site.title }}</a></h1>
+        <a href="{{ absolute_url }}">
+          <img class="logo" src="{{site.logo | relative_url}}" alt="Logo" />
+        </a>
 
         <h3>{{ site.description | default: site.github.project_tagline }}</h3>
 
