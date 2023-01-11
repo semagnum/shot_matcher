@@ -5,9 +5,13 @@ from .op_utils import valid_rgb_range, truncate_name, offset_power_slope
 
 class SM_OT_color_balance_node(bpy.types.Operator):
     bl_idname = 'shot_matcher.color_balance_node'
-    bl_label = 'Shot Matcher: Color Balance'
+    bl_label = 'Shot Matcher to Color Balance'
     bl_description = 'Creates a color balance node that maps max/min values from the foreground to the background layer'
-    bl_options = {'REGISTER'}
+    bl_options = {'REGISTER', 'UNDO'}
+
+    use_midtones: bpy.props.BoolProperty(name="Use midtones",
+                                         description="Compute color balance power using midtones,"
+                                                     "otherwise set it to default value")
 
     def execute(self, context):
         node_name = 'CB: ' + truncate_name(context.scene.sm_fg_name, 12) + ' -> ' + truncate_name(
@@ -31,7 +35,7 @@ class SM_OT_color_balance_node(bpy.types.Operator):
             basis, offset, power, slope = offset_power_slope(context)
             cb_node.slope = slope
             cb_node.offset = offset
-            cb_node.power = power
+            cb_node.power = power if self.use_midtones else (1.0, 1.0, 1.0)
             cb_node.offset_basis = basis
         except ZeroDivisionError:
             self.report({'ERROR'}, 'Failed: division by zero ([white color] - [black color] must not equal zero!)')

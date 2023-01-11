@@ -19,7 +19,7 @@ def create_layer_node(context, tree, layer_name, layer_type):
     return layer_node
 
 
-def create_sm_ao_node(context, node_group_name):
+def create_sm_ao_node(context, node_group_name, use_midtones):
     # create a group
     image_merge_group = bpy.data.node_groups.get(node_group_name)
 
@@ -52,7 +52,7 @@ def create_sm_ao_node(context, node_group_name):
         basis, offset, power, slope = offset_power_slope(context)
         color_node.slope = slope
         color_node.offset = offset
-        color_node.power = power
+        color_node.power = power if use_midtones else (1.0, 1.0, 1.0)
         color_node.offset_basis = basis
     except ZeroDivisionError:
         raise ZeroDivisionError('Failed: division by zero ([white color] - [black color] must not equal zero!)')
@@ -62,9 +62,13 @@ def create_sm_ao_node(context, node_group_name):
 
 class SM_OT_alpha_over_node(bpy.types.Operator):
     bl_idname = 'shot_matcher.alpha_over_node'
-    bl_label = 'Shot Matcher: Alpha Over'
+    bl_label = 'Shot Matcher to Alpha Over'
     bl_description = 'Creates an alpha-over node that maps max/min values from the foreground to the background layer'
-    bl_options = {'REGISTER'}
+    bl_options = {'REGISTER', 'UNDO'}
+
+    use_midtones: bpy.props.BoolProperty(name="Use midtones",
+                                        description="Compute color balance power using midtones,"
+                                                    "otherwise set it to default value")
 
     def execute(self, context):
         bg_name = context.scene.sm_bg_name
@@ -77,7 +81,7 @@ class SM_OT_alpha_over_node(bpy.types.Operator):
             return {'FINISHED'}
 
         try:
-            alpha_over_group = create_sm_ao_node(context, node_group_name)
+            alpha_over_group = create_sm_ao_node(context, node_group_name, self.use_midtones)
         except ZeroDivisionError as err:
             self.report({'ERROR'}, err)
             return {'FINISHED'}

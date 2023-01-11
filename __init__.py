@@ -20,7 +20,7 @@ from .panels.SM_PT_video_analyzer import SM_PT_video_analyzer
 bl_info = {
     "name": 'Shot Matcher',
     "author": 'Spencer Magnusson',
-    "version": (3, 4, 4),
+    "version": (3, 4, 5),
     "blender": (2, 83, 0),
     "description": 'Analyzes colors of an image or movie clip and applies it to the compositing tree.',
     "location": 'Image Editor > UI > Shot Matcher & Movie Clip Editor > Tools > Shot Matcher',

@@ -45,6 +45,11 @@ The Shot Matcher's can analyze any image or video referenced in the Blender file
 
 ## Applying to the Compositor
 
+For both operators, the redo panel has an option to also apply midtones
+to the color balance node.
+Using the midtone analysis often skews the colors, so this is off by default.
+
+
 ### Color Balance Node
 Adds a color balance node to your compositor,
 mapping the black and white values from the foreground to the background.
