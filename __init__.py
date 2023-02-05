@@ -1,3 +1,20 @@
+"""
+Copyright (C) 2023 Spencer Magnusson
+semagnum@gmail.com
+Created by Spencer Magnusson
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+
 import bpy
 
 from .LayerSettings import LayerSettings
@@ -5,22 +22,10 @@ from .LayerDict import LayerDict
 from .utils import type_update, get_bg_name, get_fg_name, set_bg_name, set_fg_name, copy_settings
 from bpy.app.handlers import persistent
 
-from .operators.SM_OT_color_picker import SM_OT_color_picker
-from .operators.SM_OT_color_reset import SM_OT_color_reset
-from .operators.SM_OT_alpha_over_node import SM_OT_alpha_over_node
-from .operators.SM_OT_color_balance_node import SM_OT_color_balance_node
-from .operators.SM_OT_image_calculator import SM_OT_image_calculator
-from .operators.SM_OT_set_selected import SM_OT_set_selected
-from .operators.SM_OT_video_calculator import SM_OT_video_calculator
-from .operators.SM_OT_video_frame_calculator import SM_OT_video_frame_calculator
-
-from .panels.SM_PT_image_analyzer import SM_PT_image_analyzer
-from .panels.SM_PT_video_analyzer import SM_PT_video_analyzer
-
 bl_info = {
     "name": 'Shot Matcher',
     "author": 'Spencer Magnusson',
-    "version": (3, 4, 5),
+    "version": (3, 4, 6),
     "blender": (2, 83, 0),
     "description": 'Analyzes colors of an image or movie clip and applies it to the compositing tree.',
     "location": 'Image Editor > UI > Shot Matcher & Movie Clip Editor > Tools > Shot Matcher',
@@ -28,16 +33,10 @@ bl_info = {
     "category": 'Compositing'
 }
 
-model_classes = [LayerSettings, LayerDict]
+from . import operators
+from . import panels
 
-addon_classes = [
-    SM_OT_color_picker, SM_OT_color_reset,
-    SM_OT_alpha_over_node, SM_OT_color_balance_node,
-    SM_OT_image_calculator,
-    SM_OT_set_selected,
-    SM_OT_video_calculator, SM_OT_video_frame_calculator,
-    SM_PT_image_analyzer, SM_PT_video_analyzer
-]
+MODEL_CLASSES = (LayerSettings, LayerDict)
 
 
 @persistent
@@ -81,7 +80,7 @@ def load_post_purge_settings(dummy):
 
 
 def register():
-    for cls in model_classes:
+    for cls in MODEL_CLASSES:
         bpy.utils.register_class(cls)
 
     scene = bpy.types.Scene
@@ -118,13 +117,13 @@ def register():
     bpy.app.handlers.save_pre.append(save_pre_layer_settings)
     bpy.app.handlers.load_post.append(load_post_purge_settings)
 
-    for cls in addon_classes:
-        bpy.utils.register_class(cls)
+    operators.register()
+    panels.register()
 
 
 def unregister():
-    for cls in addon_classes[::-1]:
-        bpy.utils.unregister_class(cls)
+    panels.unregister()
+    operators.unregister()
     scene = bpy.types.Scene
 
     bpy.app.handlers.save_pre.remove(save_pre_layer_settings)
@@ -133,5 +132,5 @@ def unregister():
     del scene.sm_settings_movieclips, scene.sm_settings_images, scene.sm_bg_type, scene.sm_fg_type
     del scene.sm_background, scene.sm_foreground, scene.layer_context
 
-    for cls in model_classes[::-1]:
+    for cls in MODEL_CLASSES:
         bpy.utils.unregister_class(cls)
