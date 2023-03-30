@@ -7,6 +7,8 @@ allowed_file_extensions = {'.py', 'README.md', 'LICENSE'}
 
 def zipdir(path, ziph, zip_subdir_name):
     for root, dirs, files in os.walk(path):
+        if root.__contains__('venv'):
+            continue
         for file in files:
             if any(file.endswith(ext) for ext in allowed_file_extensions):
                 orig_hier = os.path.join(root, file)
