@@ -17,6 +17,7 @@ Created by Spencer Magnusson
 
 import bpy
 
+from ..layers import build_layer_type
 
 class SM_OT_set_selected(bpy.types.Operator):
     bl_idname = 'shot_matcher.set_selected'
@@ -26,22 +27,21 @@ class SM_OT_set_selected(bpy.types.Operator):
 
     space_type: bpy.props.StringProperty()
 
-    @classmethod
-    def poll(cls, context):
-        return (hasattr(context, 'edit_image') and hasattr(context.edit_image, 'name')) or (
-                    hasattr(context, 'edit_movieclip') and hasattr(context.edit_movieclip, 'name'))
+    layer_type: bpy.props.StringProperty()
 
     def execute(self, context):
+        has_valid_image = (hasattr(context, 'edit_image') and hasattr(context.edit_image, 'name'))
+        has_valid_movieclip = (hasattr(context, 'edit_movieclip') and hasattr(context.edit_movieclip, 'name'))
+        if not(has_valid_image or has_valid_movieclip):
+            self.report({'ERROR'}, 'Must have a valid image or movieclip open')
+            return {'CANCELLED'}
+
+        name_attr = build_layer_type(context, self.layer_type).name_str
+
         if self.space_type == 'IMAGE_EDITOR':
-            if context.scene.layer_context == 'bg':
-                context.scene.sm_bg_name = context.edit_image.name
-            else:
-                context.scene.sm_fg_name = context.edit_image.name
+            setattr(context.scene, name_attr, context.edit_image.name)
         elif self.space_type == 'CLIP_EDITOR':
-            if context.scene.layer_context == 'bg':
-                context.scene.sm_bg_name = context.edit_movieclip.name
-            else:
-                context.scene.sm_fg_name = context.edit_movieclip.name
+            setattr(context.scene, name_attr, context.edit_movieclip.name)
         else:
             return {'CANCELLED'}
 

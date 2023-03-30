@@ -17,8 +17,8 @@ Created by Spencer Magnusson
 
 import bpy
 
-from .op_utils import get_render_result
-from ..utils import get_layer_settings
+from ..layers import build_layer_type
+from .op_utils import get_render_result, valid_image
 
 
 class SM_OT_color_picker(bpy.types.Operator):
@@ -26,12 +26,15 @@ class SM_OT_color_picker(bpy.types.Operator):
     bl_description = 'Use a color picker to select the white and black values'
     bl_label = 'Min Max Color Picker'
 
-    @classmethod
-    def poll(cls, context):
-        return context.edit_image is not None and (
-                    context.edit_image.pixels or context.edit_image.type == 'RENDER_RESULT')
+    layer_type: bpy.props.StringProperty()
 
-    def color_pick(self, context, context_layer, event):
+    def color_pick(self, context, event):
+        if not valid_image(context.edit_image):
+            self.report({'ERROR'}, 'Must have a valid image open in the image editor')
+            return {'CANCELLED'}
+
+        context_layer = self.context_layer
+
         mouse_x = event.mouse_x - context.region.x
         mouse_y = event.mouse_y - context.region.y
         uv = context.area.regions[-1].view2d.region_to_view(mouse_x, mouse_y)
@@ -42,6 +45,7 @@ class SM_OT_color_picker(bpy.types.Operator):
         r, g, b, alpha = self.img_pixels[offset:offset + 4]
         if context_layer.use_alpha_threshold and context_layer.alpha_threshold > alpha:
             return {'RUNNING_MODAL'}
+
         # check max for each channel
         if r > context_layer.max_color[0]:
             context_layer.max_color[0] = r
@@ -62,7 +66,6 @@ class SM_OT_color_picker(bpy.types.Operator):
         context.window.cursor_set('EYEDROPPER')
 
         context.area.header_text_set(text='LMB + drag: pick white/black colors, RMB: apply and finish, ESC: cancel')
-        context_layer = get_layer_settings(context)
         if event.type == 'LEFTMOUSE':  # start or end drag
             self.lmb = (event.value == 'PRESS')
         elif event.type == 'RIGHTMOUSE':  # accept color pick
@@ -71,8 +74,8 @@ class SM_OT_color_picker(bpy.types.Operator):
             context.window.cursor_set('DEFAULT')
             return {'FINISHED'}
         elif event.type == 'ESC':  # reset to original colors
-            context_layer.min_color = (self.min_r, self.min_g, self.min_b)
-            context_layer.max_color = (self.max_r, self.max_g, self.max_b)
+            self.context_layer.min_color = (self.min_r, self.min_g, self.min_b)
+            self.context_layer.max_color = (self.max_r, self.max_g, self.max_b)
             context.window.cursor_set('DEFAULT')
             context.area.header_text_set(text=None)
             context.area.tag_redraw()
@@ -81,19 +84,19 @@ class SM_OT_color_picker(bpy.types.Operator):
             return {'PASS_THROUGH'}
 
         if self.lmb:
-            self.color_pick(context, context_layer, event)
+            self.color_pick(context, event)
 
         return {'RUNNING_MODAL'}
 
     def invoke(self, context, event):
-        context_layer = get_layer_settings(context)
+        self.context_layer = build_layer_type(context, self.layer_type).settings
         self.lmb = False
-        self.min_r = context_layer.min_color[0]
-        self.min_g = context_layer.min_color[1]
-        self.min_b = context_layer.min_color[2]
-        self.max_r = context_layer.max_color[0]
-        self.max_g = context_layer.max_color[1]
-        self.max_b = context_layer.max_color[2]
+        self.min_r = self.context_layer.min_color[0]
+        self.min_g = self.context_layer.min_color[1]
+        self.min_b = self.context_layer.min_color[2]
+        self.max_r = self.context_layer.max_color[0]
+        self.max_g = self.context_layer.max_color[1]
+        self.max_b = self.context_layer.max_color[2]
 
         if context.area.type == 'IMAGE_EDITOR' and context.edit_image is not None:
             if context.edit_image.type == 'RENDER_RESULT':

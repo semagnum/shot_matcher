@@ -18,7 +18,9 @@ Created by Spencer Magnusson
 import gpu
 import numpy as np
 
-from ..utils import get_layer_settings
+
+def valid_image(image):
+    return image is not None and (image.pixels or image.type == 'RENDER_RESULT')
 
 
 def truncate_name(name, limit):
@@ -26,23 +28,22 @@ def truncate_name(name, limit):
 
 
 # returns the midtone color for use by the video analyzer
-def frame_analyze(context, image):
-    layer = get_layer_settings(context)
+def frame_analyze(image, layer_settings):
     pixels = np.array(image).reshape(-1, 4)
 
     # slice the pixels into the RGB channels
-    if layer.use_alpha_threshold:
+    if layer_settings.use_alpha_threshold:
         ch_a = pixels[:, 3]
-        pixels = pixels[(ch_a >= layer.alpha_threshold)]
+        pixels = pixels[(ch_a >= layer_settings.alpha_threshold)]
 
     pixels = np.delete(pixels, 3, axis=1)
     img_max = pixels.max(axis=0)
     img_min = pixels.min(axis=0)
     img_mid = pixels.mean(axis=0)
 
-    layer.max_color = tuple(img_max)
-    layer.mid_color = tuple(img_mid)
-    layer.min_color = tuple(img_min)
+    layer_settings.max_color = tuple(img_max)
+    layer_settings.mid_color = tuple(img_mid)
+    layer_settings.min_color = tuple(img_min)
 
 
 def valid_rgb_range(context):

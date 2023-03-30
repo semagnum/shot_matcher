@@ -16,7 +16,8 @@ Created by Spencer Magnusson
 
 
 import bpy
-from ..utils import get_layer_settings, get_layer_name
+
+from ..layers import build_layer_type
 from .op_utils import frame_analyze
 
 
@@ -25,6 +26,8 @@ class SM_OT_video_calculator(bpy.types.Operator):
     bl_label = 'Video Color Analyzer'
     bl_description = 'Calculates the maximum/minimum values in a movie clip, following the frame range and step'
     bl_options = {'REGISTER', 'UNDO'}
+
+    layer_type: bpy.props.StringProperty()
 
     def findImageEditor(self):
         self.viewer_area = None
@@ -61,13 +64,14 @@ class SM_OT_video_calculator(bpy.types.Operator):
             pass
         return {'CANCELLED'}
 
-    @classmethod
-    def poll(cls, context):
-        return get_layer_name(context) in bpy.data.movieclips
-
     def execute(self, context):
-        context_layer = get_layer_settings(context)
-        movie_clip = bpy.data.movieclips[get_layer_name(context)]
+        layer = build_layer_type(context, self.layer_type)
+        if layer.name not in bpy.data.movieclips:
+            self.report({'ERROR'}, 'Must have a valid movieclip selected')
+            return {'CANCELLED'}
+
+        context_layer = layer.settings
+        movie_clip = bpy.data.movieclips[layer.name]
 
         if context_layer.start_frame < movie_clip.frame_start or context_layer.end_frame > movie_clip.frame_duration or context_layer.start_frame > context_layer.end_frame:
             return self.cancelCleanup(context=context,
@@ -98,7 +102,7 @@ class SM_OT_video_calculator(bpy.types.Operator):
 
         self.resetUI()
         try:
-            frame_analyze(context, all_images)
+            frame_analyze(all_images, layer.settings)
         except MemoryError:
             return self.cancelCleanup(context=context,
                                       message='Memory overload, analysis failed (lessen the frame range)')

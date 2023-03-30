@@ -17,7 +17,7 @@ Created by Spencer Magnusson
 
 import bpy
 
-from ..utils import get_layer_settings
+from ..layers import build_layer_type
 
 
 class SM_OT_color_reset(bpy.types.Operator):
@@ -25,11 +25,13 @@ class SM_OT_color_reset(bpy.types.Operator):
     bl_label = 'Reset Min and Max Colors'
     bl_description = 'Resets the maximum and minimum color values for use with the color picker'
     bl_options = {'REGISTER', 'UNDO'}
+
+    layer_type: bpy.props.StringProperty()
     
     def execute(self, context):
-        context_layer = get_layer_settings(context)
+        settings = build_layer_type(context, self.layer_type).settings
         max_color = (10000.0, 10000.0, 10000.0)
         min_color = (0.0, 0.0, 0.0)
-        context_layer.max_color = min_color
-        context_layer.min_color = max_color
+        settings.max_color = min_color
+        settings.min_color = max_color
         return {'FINISHED'}

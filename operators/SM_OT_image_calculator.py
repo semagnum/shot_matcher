@@ -16,8 +16,8 @@ Created by Spencer Magnusson
 
 
 import bpy
-from ..utils import get_layer_name
-from .op_utils import frame_analyze, get_render_result
+from ..layers import build_layer_type
+from .op_utils import frame_analyze, get_render_result, valid_image
 
 
 class SM_OT_image_calculator(bpy.types.Operator):
@@ -26,19 +26,25 @@ class SM_OT_image_calculator(bpy.types.Operator):
     bl_description = 'Calculates the maximum/minimum values for an image'
     bl_options = {'REGISTER'}
 
-    @classmethod
-    def poll(cls, context):
-        layer = get_layer_name(context)
-        return (layer in bpy.data.images) and (bpy.data.images[layer].pixels or bpy.data.images[layer].type == 'RENDER_RESULT')
+    layer_type: bpy.props.StringProperty()
     
     def execute(self, context):
+        layer = build_layer_type(context, self.layer_type)
+        layer_name = layer.name
+
+        images = bpy.data.images
+        if layer_name not in bpy.data.images or not valid_image(images[layer_name]):
+            self.report({'ERROR'}, 'Must have a valid image selected')
+            return {'CANCELLED'}
+
+        bpy_image = bpy.data.images[layer_name]
+
         context.window.cursor_set('WAIT')
-        bpy_image = bpy.data.images[get_layer_name(context)]
         if bpy_image.type == 'RENDER_RESULT':
             image, _, _ = get_render_result(bpy_image)
         else:
             image = bpy_image.pixels
-        frame_analyze(context, image)
+        frame_analyze(image, layer.settings)
         
         context.window.cursor_set('DEFAULT')
         return {'FINISHED'}

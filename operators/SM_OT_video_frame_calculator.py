@@ -17,8 +17,8 @@ Created by Spencer Magnusson
 
 import bpy
 
+from ..layers import build_layer_type
 from .op_utils import frame_analyze
-from ..utils import get_layer_name
 
 
 class SM_OT_video_frame_calculator(bpy.types.Operator):
@@ -26,6 +26,8 @@ class SM_OT_video_frame_calculator(bpy.types.Operator):
     bl_label = 'Video Frame Color Analyzer'
     bl_description = 'Calculates the maximum/minimum values for a single movie clip frame'
     bl_options = {'REGISTER', 'UNDO'}
+
+    layer_type: bpy.props.StringProperty()
 
     def findImageEditor(self):
         self.viewer_area = None
@@ -55,12 +57,13 @@ class SM_OT_video_frame_calculator(bpy.types.Operator):
             pass
         return {'CANCELLED'}
 
-    @classmethod
-    def poll(cls, context):
-        return get_layer_name(context) in bpy.data.movieclips
-
     def execute(self, context):
-        movie_clip = bpy.data.movieclips[get_layer_name(context)]
+        layer = build_layer_type(context, self.layer_type)
+        if layer.name not in bpy.data.movieclips:
+            self.report({'ERROR'}, 'Must have a valid movieclip selected')
+            return {'CANCELLED'}
+
+        movie_clip = bpy.data.movieclips[layer.name]
 
         curr_frame = context.scene.frame_current
 
@@ -83,7 +86,7 @@ class SM_OT_video_frame_calculator(bpy.types.Operator):
         # switch back and forth to force refresh
         self.viewer_space.display_channels = 'COLOR'
         self.viewer_space.display_channels = 'COLOR_ALPHA'
-        frame_analyze(context, self.viewer_space.image.pixels)
+        frame_analyze(self.viewer_space.image.pixels, layer.settings)
 
         self.viewer_space.image = None
         if self.previousAreaType is not None:

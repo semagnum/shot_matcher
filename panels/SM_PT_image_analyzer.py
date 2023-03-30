@@ -17,14 +17,37 @@ Created by Spencer Magnusson
 
 import bpy
 
-from .panel_utils import draw_panel
+from ..layers import SourceLayer, TargetLayer
+from ..operators import SM_OT_alpha_over_node, SM_OT_color_balance_node
+from .panel_utils import draw_layer, PANEL_NAME
 
 
-class SM_PT_image_analyzer(bpy.types.Panel):
+class SM_PT_image_analyzer_target(bpy.types.Panel):
     bl_space_type = 'IMAGE_EDITOR'
-    bl_label = "Shot Matcher"
-    bl_category = "Shot Matcher"
+    bl_label = "Target"
+    bl_category = PANEL_NAME
     bl_region_type = 'UI'
 
     def draw(self, context):
-        draw_panel(self, context)
+        draw_layer(self, context, TargetLayer(context))
+
+class SM_PT_image_analyzer_source(bpy.types.Panel):
+    bl_space_type = 'IMAGE_EDITOR'
+    bl_label = "Source"
+    bl_category = PANEL_NAME
+    bl_region_type = 'UI'
+
+    def draw(self, context):
+        draw_layer(self, context, SourceLayer(context))
+
+
+class SM_PT_image_analyzer_apply(bpy.types.Panel):
+    bl_space_type = 'IMAGE_EDITOR'
+    bl_label = "Apply"
+    bl_category = PANEL_NAME
+    bl_region_type = 'UI'
+
+    def draw(self, _context):
+        layout = self.layout
+        layout.operator(SM_OT_color_balance_node.bl_idname, text='Color Balance', icon='COLOR')
+        layout.operator(SM_OT_alpha_over_node.bl_idname, text='Alpha Over', icon='RENDERLAYERS')

@@ -17,17 +17,16 @@ Created by Spencer Magnusson
 
 import bpy
 
-from .LayerSettings import LayerSettings
-from .LayerDict import LayerDict
-from .utils import type_update, get_bg_name, get_fg_name, set_bg_name, set_fg_name, copy_settings
-from bpy.app.handlers import persistent
+from .handlers import set_bg_name, set_fg_name, get_bg_name, get_fg_name, bg_update, fg_update
+from .handlers import save_pre_layer_settings, load_post_purge_settings
+from .layers import LayerSettings, LayerDict
 
 bl_info = {
     "name": 'Shot Matcher',
     "author": 'Spencer Magnusson',
-    "version": (3, 4, 6),
-    "blender": (2, 83, 0),
-    "description": 'Analyzes colors of an image or movie clip and applies it to the compositing tree.',
+    "version": (3, 5, 0),
+    "blender": (3, 3, 0),
+    "description": 'Analyzes colors of an image or movieclip and applies it to the compositing tree.',
     "location": 'Image Editor > UI > Shot Matcher & Movie Clip Editor > Tools > Shot Matcher',
     "support": 'COMMUNITY',
     "category": 'Compositing'
@@ -37,46 +36,6 @@ from . import operators
 from . import panels
 
 MODEL_CLASSES = (LayerSettings, LayerDict)
-
-
-@persistent
-def save_pre_layer_settings(dummy):
-    def save_layer(scene, layer_name, sm_layer, sm_layer_type):
-        if layer_name == '':
-            return
-
-        if sm_layer_type == 'video':
-            layer_dict = scene.sm_settings_movieclips
-        else:
-            layer_dict = scene.sm_settings_images
-
-        current_index = layer_dict.find(layer_name)
-        copy_settings(sm_layer, layer_dict[current_index].setting)
-
-    for scene in bpy.data.scenes:
-        save_layer(scene, scene.sm_bg_name, scene.sm_background, scene.sm_bg_type)
-        save_layer(scene, scene.sm_fg_name, scene.sm_foreground, scene.sm_fg_type)
-
-
-@persistent
-def load_post_purge_settings(dummy):
-    def purge_layer(settings_list, data_list, print_type):
-        index = 0
-        name_list = []
-        while index < len(settings_list):
-            if settings_list[index].name not in data_list:
-                name_list.append(settings_list[index].name)
-                settings_list.remove(index)
-            else:
-                index += 1
-        if len(name_list) > 0:
-            print('{} layer settings have been removed for the following {}:'.format(len(name_list), print_type))
-            for name in name_list:
-                print('\t{}'.format(name))
-
-    for scene in bpy.data.scenes:
-        purge_layer(scene.sm_settings_movieclips, bpy.data.movieclips, 'movieclips')
-        purge_layer(scene.sm_settings_images, bpy.data.images, 'images')
 
 
 def register():
@@ -92,7 +51,7 @@ def register():
         items=[('video', 'Video', '', 'FILE_MOVIE', 1),
                ('image', 'Image', '', 'FILE_IMAGE', 2),
                ],
-        update=type_update
+        update=fg_update
     )
     scene.sm_bg_type = bpy.props.EnumProperty(
         name='Layer Type',
@@ -100,15 +59,9 @@ def register():
         items=[('video', 'Video', '', 'FILE_MOVIE', 1),
                ('image', 'Image', '', 'FILE_IMAGE', 2),
                ],
-        update=type_update
+        update=bg_update
     )
-    scene.layer_context = bpy.props.EnumProperty(
-        name='Layer',
-        description='The current layer being analyzed',
-        items=[('bg', 'Background', ''),
-               ('fg', 'Foreground', ''),
-               ]
-    )
+
     scene.sm_background = bpy.props.PointerProperty(type=LayerSettings)
     scene.sm_foreground = bpy.props.PointerProperty(type=LayerSettings)
     scene.sm_bg_name = bpy.props.StringProperty(default='', get=get_bg_name, set=set_bg_name)
@@ -130,7 +83,7 @@ def unregister():
     bpy.app.handlers.load_post.remove(load_post_purge_settings)
     
     del scene.sm_settings_movieclips, scene.sm_settings_images, scene.sm_bg_type, scene.sm_fg_type
-    del scene.sm_background, scene.sm_foreground, scene.layer_context
+    del scene.sm_background, scene.sm_foreground
 
     for cls in MODEL_CLASSES:
         bpy.utils.unregister_class(cls)

@@ -40,7 +40,7 @@ This is for your color picker, in case you accidentally picked an area that thro
 This resets your min color to absolute white, and your max color to absolute black.
 
 ### Set as Selected
-This allows you to set the current image or video you're viewing as the background or foreground layer.
+This allows you to set the current image or video you're viewing as the target or source.
 The Shot Matcher's can analyze any image or video referenced in the Blender file, regardless of whether it's visible.
 
 ## Applying to the Compositor
@@ -52,24 +52,24 @@ Using the midtone analysis often skews the colors, so this is off by default.
 
 ### Color Balance Node
 Adds a color balance node to your compositor,
-mapping the black and white values from the foreground to the background.
+mapping the black and white values from the source to the target.
 This is for keeping color ranges consistent between images or clips.
 
 ### Alpha Over Node
 Adds a color matching node group to your compositor,
-mapping the black and white values from the foreground to the background.
+mapping the black and white values from the source to the target.
 This is for merging the layers into one image.
 
 ## How to Use
 
-1. Select your background and foreground layers.
-The background is the image or video that will be "behind" the foreground layer in your final composition.
-It's also the layer that the foreground's color range will be mapped to.
+1. Select your target and source layers.
+The source is the image or movie clip that you want to change. 
+The target is the image or video whose color range your source layer will be mapped to.
 You can select the image or movie clip from the textbox
 or the "Use Current Image/Clip" button to get the file you are currently viewing.
-2. For the background layer, analyze and get the colors representing black and white in the image.
+2. For the target layer, analyze and get the colors representing black and white in the image.
 Use pixels of the picture/video that represent black or white colors for reference,
-preferably in the area that your foreground layer will be composited to.
+preferably in the area that your source layer will be composited to.
     * For images, you can use either the auto calculator or the color picker.
 For the calculator, simply press the button and let it pick the max and min RGB values in the image.
 It can get close, but usually the color picker is best.
@@ -85,7 +85,7 @@ Whenever you run the analysis, the addon will iterate from "start frame" to "end
 For example, if the parameters above were (1, 250, 10), the addon will look at frames 1, 11, 21,...231, and 241.
     * Note: if you insist to color pick a movie clip, simply load the movie clip into Blender as an image.
 On the side panel, you can change the current frame to your liking.
-3. Repeat the previous step for the foreground layer.
+3. Repeat the previous step for the source layer.
 4. Once you've gotten the values for each layer, select one of the node groups to generate.
 The "alpha over" is for typical compositing, while the color balance one is helpful for shot matching.
 5. If you need to update the colors, just adjust them and click the node button again,
