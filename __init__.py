@@ -24,12 +24,14 @@ from .layers import LayerSettings, LayerDict
 bl_info = {
     "name": 'Shot Matcher',
     "author": 'Spencer Magnusson',
-    "version": (3, 5, 0),
+    "version": (3, 5, 1),
     "blender": (3, 3, 0),
     "description": 'Analyzes colors of an image or movieclip and applies it to the compositing tree.',
     "location": 'Image Editor > UI > Shot Matcher & Movie Clip Editor > Tools > Shot Matcher',
     "support": 'COMMUNITY',
-    "category": 'Compositing'
+    "category": 'Compositing',
+    'doc_url': 'https://semagnum.github.io/shot-matcher/',
+    'tracker_url': 'https://github.com/semagnum/shot-matcher/issues',
 }
 
 from . import operators
