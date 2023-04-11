@@ -17,14 +17,14 @@ Created by Spencer Magnusson
 
 import bpy
 
-from .SM_OT_color_picker import SM_OT_color_picker
-from .SM_OT_color_reset import SM_OT_color_reset
-from .SM_OT_alpha_over_node import SM_OT_alpha_over_node
-from .SM_OT_color_balance_node import SM_OT_color_balance_node
-from .SM_OT_image_calculator import SM_OT_image_calculator
-from .SM_OT_set_selected import SM_OT_set_selected
-from .SM_OT_video_calculator import SM_OT_video_calculator
-from .SM_OT_video_frame_calculator import SM_OT_video_frame_calculator
+from .ColorPicker import SM_OT_color_picker
+from .ResetColorPicker import SM_OT_color_reset
+from .AlphaOverNode import SM_OT_alpha_over_node
+from .ColorBalanceNode import SM_OT_color_balance_node
+from .ImageCalculator import SM_OT_image_calculator
+from .SetSelectedLayer import SM_OT_set_selected
+from .VideoCalculator import SM_OT_video_calculator
+from .VideoFrameCalculator import SM_OT_video_frame_calculator
 
 _register_order = [SM_OT_color_picker, SM_OT_color_reset,
                    SM_OT_alpha_over_node, SM_OT_color_balance_node,
