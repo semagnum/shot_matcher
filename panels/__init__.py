@@ -1,3 +1,16 @@
+if "bpy" in locals():
+    import importlib
+    reloadable_modules = [
+        'ImageEditor',
+        'MovieClipEditor',
+        'Compositor'
+    ]
+    for module_name in reloadable_modules:
+        if module_name in locals():
+            importlib.reload(locals()[module_name])
+
+from . import ImageEditor, MovieClipEditor, Compositor
+
 import bpy
 
 from .ImageEditor import SM_PT_image_analyzer_source, SM_PT_image_analyzer_target, SM_PT_image_analyzer_apply

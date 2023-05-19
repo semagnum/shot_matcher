@@ -20,7 +20,7 @@ import bpy
 
 class LayerSettings(bpy.types.PropertyGroup):
     max_color: bpy.props.FloatVectorProperty(
-        description='The color representing the white value of this layer',
+        description='The color representing the white value of this layer AYOOOO',
         default=(1.0, 1.0, 1.0),
         min=0.0,
         precision=4,

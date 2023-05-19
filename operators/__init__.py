@@ -14,8 +14,33 @@ Created by Spencer Magnusson
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+if "bpy" in locals():
+    import importlib
+    reloadable_modules = [
+        'ColorPicker',
+        'ResetColorPicker',
+        'AlphaOverNode',
+        'ColorBalanceNode',
+        'ImageCalculator',
+        'SetSelectedLayer',
+        'VideoCalculator',
+        'VideoFrameCalculator',
+    ]
+    for module_name in reloadable_modules:
+        if module_name in locals():
+            importlib.reload(locals()[module_name])
 
 import bpy
+
+from . import (ColorPicker,
+        ResetColorPicker,
+        AlphaOverNode,
+        ColorBalanceNode,
+        ImageCalculator,
+        SetSelectedLayer,
+        VideoCalculator,
+        VideoFrameCalculator
+        )
 
 from .ColorPicker import SM_OT_color_picker
 from .ResetColorPicker import SM_OT_color_reset

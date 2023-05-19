@@ -14,13 +14,28 @@ Created by Spencer Magnusson
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+if "bpy" in locals():
+    import importlib
+    reloadable_modules = [
+        'layer_base',
+        'layer_source',
+        'layer_target',
+        'layer_props',
+        'layer_dict',
+    ]
+    for module_name in reloadable_modules:
+        if module_name in locals():
+            importlib.reload(locals()[module_name])
 
-from .BaseLayer import BaseLayer
-from .SourceLayer import SourceLayer
-from .TargetLayer import TargetLayer
+from . import layer_base, layer_source, layer_target, layer_dict, layer_props
 
-from .LayerDict import LayerDict
-from .LayerSettings import LayerSettings
+
+from .layer_base import BaseLayer
+from .layer_source import SourceLayer
+from .layer_target import TargetLayer
+
+from .layer_dict import LayerDict
+from .layer_props import LayerSettings
 
 LAYER_TYPES = {
     'target': TargetLayer,

@@ -14,8 +14,21 @@ Created by Spencer Magnusson
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+if "bpy" in locals():
+    import importlib
+    reloadable_modules = [
+        'handlers',
+        'layers',
+        'operators',
+        'panels'
+    ]
+    for module_name in reloadable_modules:
+        if module_name in locals():
+            importlib.reload(locals()[module_name])
 
 import bpy
+
+from . import handlers, layers, operators, panels
 
 from .handlers import set_bg_name, set_fg_name, get_bg_name, get_fg_name, bg_update, fg_update
 from .handlers import save_pre_layer_settings, load_post_purge_settings
@@ -33,9 +46,6 @@ bl_info = {
     'doc_url': 'https://semagnum.github.io/shot-matcher/',
     'tracker_url': 'https://github.com/semagnum/shot-matcher/issues',
 }
-
-from . import operators
-from . import panels
 
 MODEL_CLASSES = (LayerSettings, LayerDict)
 

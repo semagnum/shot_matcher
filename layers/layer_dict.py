@@ -16,7 +16,7 @@ Created by Spencer Magnusson
 
 
 import bpy
-from .LayerSettings import LayerSettings
+from .layer_props import LayerSettings
 
 
 class LayerDict(bpy.types.PropertyGroup):
