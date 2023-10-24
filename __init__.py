@@ -37,9 +37,9 @@ from .layers import LayerSettings, LayerDict
 bl_info = {
     "name": 'Shot Matcher',
     "author": 'Spencer Magnusson',
-    "version": (3, 5, 2),
-    "blender": (3, 3, 0),
-    "description": 'Analyzes colors of an image or movieclip and applies it to the compositing tree.',
+    "version": (3, 5, 3),
+    "blender": (4, 0, 0),
+    "description": 'Analyzes colors of an image or movie clip and applies it to the compositing tree.',
     "location": 'Image Editor > UI > Shot Matcher, Movie Clip Editor > Tools > Shot Matcher, Compositor > UI > Shot Matcher',
     "support": 'COMMUNITY',
     "category": 'Compositing',

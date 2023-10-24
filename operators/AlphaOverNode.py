@@ -18,6 +18,8 @@ Created by Spencer Magnusson
 import bpy
 from .op_utils import truncate_name, valid_rgb_range, offset_power_slope
 
+IS_BPY_V3 = bpy.app.version < (4, 0, 0)
+
 
 def create_layer_node(context, tree, layer_name, layer_type):
     if layer_type == 'video':
@@ -43,12 +45,21 @@ def create_sm_ao_node(context, node_group_name, use_midtones):
     if image_merge_group is None:
         image_merge_group = bpy.data.node_groups.new(type='CompositorNodeTree', name=node_group_name)
         # create group inputs
-        image_merge_group.inputs.new('NodeSocketColor', 'Background')
-        image_merge_group.inputs.new('NodeSocketColor', 'Foreground')
+        if IS_BPY_V3:
+            image_merge_group.inputs.new('NodeSocketColor', 'Background')
+            image_merge_group.inputs.new('NodeSocketColor', 'Foreground')
+            image_merge_group.outputs.new('NodeSocketColor', 'Image')
+        else:
+            image_merge_group.interface.new_socket('Background', description='Background layer',
+                                                   socket_type='NodeSocketColor', in_out='INPUT')
+            image_merge_group.interface.new_socket('Foreground', description='Foreground layer',
+                                                   socket_type='NodeSocketColor', in_out='INPUT')
+            image_merge_group.interface.new_socket('Image',
+                                                   socket_type='NodeSocketColor', in_out='OUTPUT')
+
         group_inputs = image_merge_group.nodes.new('NodeGroupInput')
         group_inputs.location = (-250, 0)
         # create group outputs
-        image_merge_group.outputs.new('NodeSocketColor', 'Image')
         group_outputs = image_merge_group.nodes.new('NodeGroupOutput')
         group_outputs.location = (900, 0)
         # create color balance node
