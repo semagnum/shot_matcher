@@ -1,5 +1,5 @@
 """
-Copyright (C) 2023 Spencer Magnusson
+Copyright (C) 2024 Spencer Magnusson
 semagnum@gmail.com
 Created by Spencer Magnusson
     This program is free software: you can redistribute it and/or modify
@@ -16,19 +16,42 @@ Created by Spencer Magnusson
 
 if "bpy" in locals():
     import importlib
-    reloadable_modules = [
-        'handlers',
-        'layers',
-        'operators',
-        'panels'
-    ]
-    for module_name in reloadable_modules:
-        if module_name in locals():
-            importlib.reload(locals()[module_name])
+    import os
+    import types
+
+    # double-check this add-on is imported, so it can be referenced and reloaded
+    import shot_matcher
+
+    def reload_package(package):
+        assert (hasattr(package, '__package__'))
+        fn = package.__file__
+        fn_dir = os.path.dirname(fn) + os.sep
+        module_visit = {fn}
+        del fn
+
+        def reload_recursive_ex(module):
+            module_iter = (
+                module_child
+                for module_child in vars(module).values()
+                if isinstance(module_child, types.ModuleType)
+            )
+            for module_child in module_iter:
+                fn_child = getattr(module_child, '__file__', None)
+                if (fn_child is not None) and fn_child.startswith(fn_dir) and fn_child not in module_visit:
+                    module_visit.add(fn_child)
+                    reload_recursive_ex(module_child)
+
+            importlib.reload(module)
+
+            print('Reloaded', module.__name__)
+
+        return reload_recursive_ex(package)
+
+    reload_package(shot_matcher)
 
 import bpy
 
-from . import handlers, layers, operators, panels
+from . import operators, panels
 
 from .handlers import set_bg_name, set_fg_name, get_bg_name, get_fg_name, bg_update, fg_update
 from .handlers import save_pre_layer_settings, load_post_purge_settings
@@ -37,7 +60,7 @@ from .layers import LayerSettings, LayerDict
 bl_info = {
     "name": 'Shot Matcher',
     "author": 'Spencer Magnusson',
-    "version": (3, 5, 3),
+    "version": (3, 5, 4),
     "blender": (4, 0, 0),
     "description": 'Analyzes colors of an image or movie clip and applies it to the compositing tree.',
     "location": 'Image Editor > UI > Shot Matcher, Movie Clip Editor > Tools > Shot Matcher, Compositor > UI > Shot Matcher',

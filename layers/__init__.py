@@ -1,5 +1,5 @@
 """
-Copyright (C) 2023 Spencer Magnusson
+Copyright (C) 2024 Spencer Magnusson
 semagnum@gmail.com
 Created by Spencer Magnusson
     This program is free software: you can redistribute it and/or modify
@@ -13,22 +13,6 @@ Created by Spencer Magnusson
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
-if "bpy" in locals():
-    import importlib
-    reloadable_modules = [
-        'layer_base',
-        'layer_source',
-        'layer_target',
-        'layer_props',
-        'layer_dict',
-    ]
-    for module_name in reloadable_modules:
-        if module_name in locals():
-            importlib.reload(locals()[module_name])
-
-from . import layer_base, layer_source, layer_target, layer_dict, layer_props
-
 
 from .layer_base import BaseLayer
 from .layer_source import SourceLayer
