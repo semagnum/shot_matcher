@@ -2,12 +2,13 @@ import os
 import zipfile
 import re
 
+ignore_folders = {'tests', 'venv', '.git', '.idea'}
 allowed_file_extensions = {'.py', 'README.md', 'LICENSE'}
 
 
 def zipdir(path, ziph, zip_subdir_name):
     for root, dirs, files in os.walk(path):
-        if root.__contains__('venv'):
+        if any(root.__contains__(folder) for folder in ignore_folders):
             continue
         for file in files:
             if any(file.endswith(ext) for ext in allowed_file_extensions):
@@ -32,10 +33,10 @@ def get_addon_version(init_path):
             return match_major, match_minor, match_patch
 
 
-filename = generate_zip_filename('shot-matcher')
+filename = generate_zip_filename('shot_matcher')
 try:
     zipf = zipfile.ZipFile(filename, 'w', zipfile.ZIP_DEFLATED)
-    zipdir('.', zipf, 'shot-matcher')
+    zipdir('.', zipf, 'shot_matcher')
     zipf.close()
     print('Successfully created zip file: {}'.format(filename))
 except Exception as e:
